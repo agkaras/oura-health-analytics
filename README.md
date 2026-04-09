@@ -41,7 +41,7 @@ Oura Ring API v2
        │         └── rolling 7-day window + refreshes oura_cycles
        │
        └── 3. AI chat workflow         ← called by Streamlit on each message
-               ├── Gemini classifier   → structured routing params
+               ├── AI classifier       → structured routing params
                ├── Normalizer (JS)     → validation & edge-case handling
                ├── Switch node         → 5 analysis branches
                │     ├── event_pattern    (tag-based, with day offsets)
@@ -51,7 +51,7 @@ Oura Ring API v2
                │     └── cycle_analysis   (menstrual cycle biomarkers)
                ├── PostgreSQL queries  → pre-aggregated results
                ├── Context Builder     → structured JSON for AI
-               └── Claude (Anthropic)  → natural language analysis
+               └── AI Agent            → natural language analysis
 
 Streamlit (chat.py)
        │
@@ -82,7 +82,7 @@ Streamlit (chat.py)
 | Database | PostgreSQL |
 | Orchestration | n8n (self-hosted, Docker) |
 | Classification LLM | Google Gemini (structured JSON output) |
-| Analysis LLM | Anthropic Claude |
+| Analysis LLM | Google Gemini |
 | Chat interface | Streamlit |
 | Infrastructure | Docker |
 
@@ -125,7 +125,7 @@ oura-health-analytics/
 - Oura Ring with API v2 personal access token ([get one here](https://cloud.ouraring.com/personal-access-tokens))
 - PostgreSQL instance (local or remote)
 - n8n self-hosted ([Docker quickstart](https://docs.n8n.io/hosting/installation/docker/))
-- Google Gemini API key (free example, can be changed for preferred AI model)
+- Google Gemini API key (example - free, can be changed for preferred AI model e.g., Claude)
 - Python 3.9+ with Streamlit
 
 ### 1. Database
