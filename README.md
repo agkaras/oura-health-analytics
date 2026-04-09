@@ -2,7 +2,11 @@
 
 > **v1.0 — initial release.** A working prototype built as a personal learning project and portfolio piece. Architecture and code quality are actively being improved.
 
-An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. Ask questions in natural language and get evidence-based analysis of your sleep, recovery, activity, stress, cycle, and custom tag-based health patterns.
+An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. The system is built as a workflow-orchestrated pipeline using n8n, handling data ingestion, scheduling, and AI routing, with PostgreSQL for analytical queries and Streamlit as the user interface.
+
+Its core capability is **pattern discovery based on custom user-defined tag**s (e.g., symptoms, lifestyle factors), with built-in temporal analysis of physiological changes before, during, and after tagged events. This allows users to uncover relationships between various personal events and signals such as HRV, sleep, and recovery — a level of insight not available in the native Oura app. Summary and trend conversational analyses are possible as well.
+
+Ask questions in natural language and receive structured, evidence-based insights into your sleep, recovery, activity, stress, menstrual cycle, and personalized health recommendations. 
 
 ---
 
@@ -10,11 +14,13 @@ An end-to-end personal health analytics platform that ingests Oura Ring biometri
 
 **Example queries the system can answer:**
 
-- *"How does my sleep look in the days around a migraine?"*
+- *"What happens to my resting heart rate during and after having a cold?"*
 - *"What tags correlate with low HRV?"*
+- _"Do I show early physiological signals before tagged stress events?"_
 - *"Show me my readiness trend over the last 30 days"*
-- *"What is my migraine risk today given my current cycle day?"*
+- *"What is my migraine risk today based on my previous data?"*
 - *"Give me a health overview of the past week"*
+
 
 The AI response always includes today's actual metrics — HRV in milliseconds, resting heart rate in bpm, cycle day and phase, stress minutes — pulled from the correct sensor columns rather than Oura's readiness contributor scores.
 
