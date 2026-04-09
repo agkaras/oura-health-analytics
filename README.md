@@ -137,9 +137,9 @@ Create the required tables. Schema file coming in next release — in the meanti
 - Open n8n → **Settings → Import workflow**
 - Import all three JSON files from the `workflows/` folder
 - In each workflow, update credentials:
-  - Replace `YOUR_POSTGRES_CREDENTIAL_NAME` with your PostgreSQL credential
-  - Replace `YOUR_OURA_CREDENTIAL_NAME` with your Oura API token credential
-  - Replace `YOUR_GEMINI_CREDENTIAL_NAME` with your Gemini credential
+  - PostgreSQL
+  - Oura API token
+  - Gemini credential
 
 ### 3. Run historical backfill
 
