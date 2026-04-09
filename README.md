@@ -2,7 +2,7 @@
 
 > **v1.0 — initial release.** A working prototype built as a personal learning project and portfolio piece. Architecture and code quality are actively being improved.
 
-An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. Ask questions in natural language and get evidence-based analysis of your sleep, recovery, activity, stress, menstrual cycle, and migraine patterns.
+An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. Ask questions in natural language and get evidence-based analysis of your sleep, recovery, activity, stress, cycle, and custom tag-based health patterns.
 
 ---
 
