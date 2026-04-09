@@ -1,0 +1,917 @@
+{
+  "name": "Oura daily update",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Fetch last 3 days to catch any retroactive Oura corrections.\nconst today = new Date();\nconst start = new Date(today);\nstart.setDate(start.getDate() - 3);\n\nreturn [{\n  start_date: start.toISOString().slice(0, 10),\n  end_date: today.toISOString().slice(0, 10)\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        480
+      ],
+      "id": "a368fca7-b407-4eb0-8143-1f6da56d7334",
+      "name": "Set date range (last 3 days)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Heart rate uses datetime params and chunks are not needed for 3 days.\nconst item = $input.first().json;\nreturn [{\n  start_date: item.start_date,\n  end_date: item.end_date\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        640
+      ],
+      "id": "e8a88b00-9040-4aad-8cbf-3781007116c5",
+      "name": "Pass dates for heart rate"
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/sleep",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4176b317-7a53-4125-9c48-c9f9550ca956",
+      "name": "Get sleep",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/daily_sleep",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        160
+      ],
+      "id": "03d8f530-8d76-431f-9fd8-4aea56de19e9",
+      "name": "Get daily sleep score",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/daily_activity",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        320
+      ],
+      "id": "1ed5b71a-ad4a-405f-913f-359088ee87e1",
+      "name": "Get activity",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/daily_readiness",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        480
+      ],
+      "id": "992bb081-9759-4a97-b7b5-39a7429dd6a6",
+      "name": "Get readiness",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/daily_stress",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        640
+      ],
+      "id": "d5e8f7e9-1e6c-4ffe-a256-a813ed7f20db",
+      "name": "Get stress",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/workout",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        800
+      ],
+      "id": "f30f6d76-94d9-4afc-b73f-41ef86e5e204",
+      "name": "Get workouts",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/enhanced_tag",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_date",
+              "value": "={{ $json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $json.end_date }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        960
+      ],
+      "id": "793649f1-9acf-483c-ba21-b660ec96832c",
+      "name": "Get events/tags",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.ouraring.com/v2/usercollection/heartrate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "ouraApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "start_datetime",
+              "value": "={{ $json.start_date }}T00:00:00+00:00"
+            },
+            {
+              "name": "end_datetime",
+              "value": "={{ $json.end_date }}T23:59:59+00:00"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1120
+      ],
+      "id": "7c5bdc6e-cd45-4032-8d33-4c0d9cf116ba",
+      "name": "Get heart rate",
+      "credentials": {
+        "ouraApi": {
+          "id": "YOUR_OURA_CREDENTIAL_ID",
+          "name": "YOUR_OURA_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        0
+      ],
+      "id": "980e6331-0802-4463-ba29-9582f43440c9",
+      "name": "Split sleep"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        160
+      ],
+      "id": "e1a56e93-37c5-452b-bd37-2e775f09ebe6",
+      "name": "Split daily sleep"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        320
+      ],
+      "id": "817cab32-268f-4fac-9af4-aa506ed833a2",
+      "name": "Split activity"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        480
+      ],
+      "id": "c2916ca2-bc58-4738-b77b-c3a93d382a34",
+      "name": "Split readiness"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        640
+      ],
+      "id": "3e768cfa-06f1-4633-aa59-d83cceac1ea5",
+      "name": "Split stress"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        800
+      ],
+      "id": "9d58d001-4003-489f-bdbd-9a5a7acb90f5",
+      "name": "Split workouts"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        960
+      ],
+      "id": "8423e872-eea2-4f0f-9a14-f3a79fe0e057",
+      "name": "Split events"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1120
+      ],
+      "id": "b52b4229-6b0a-4472-b84a-13c989b6788d",
+      "name": "Split heart rate"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_sleep (\n  id, day, bedtime_start, bedtime_end, type,\n  total_sleep_duration, deep_sleep_duration, rem_sleep_duration,\n  light_sleep_duration, awake_time, latency, efficiency,\n  average_heart_rate, lowest_heart_rate, average_hrv, average_breath,\n  time_in_bed, restless_periods, sleep_phase_5_min,\n  heart_rate_5_min, hrv_5_min, movement_30_sec\n) VALUES (\n  '{{ $json.id }}',\n  '{{ $json.day }}',\n  '{{ $json.bedtime_start }}',\n  '{{ $json.bedtime_end }}',\n  '{{ $json.type }}',\n  {{ $json.total_sleep_duration }},\n  {{ $json.deep_sleep_duration }},\n  {{ $json.rem_sleep_duration }},\n  {{ $json.light_sleep_duration }},\n  {{ $json.awake_time }},\n  {{ $json.latency === null ? 'null' : $json.latency }},\n  {{ $json.efficiency }},\n  {{ $json.average_heart_rate === null || $json.average_heart_rate === 0 ? 'null' : $json.average_heart_rate }},\n  {{ $json.lowest_heart_rate === null ? 'null' : $json.lowest_heart_rate }},\n  {{ $json.average_hrv === null ? 'null' : $json.average_hrv }},\n  {{ $json.average_breath === null ? 'null' : $json.average_breath }},\n  {{ $json.time_in_bed }},\n  {{ $json.restless_periods === null ? 'null' : $json.restless_periods }},\n  {{ $json.sleep_phase_5_min === null ? 'null' : \"'\" + $json.sleep_phase_5_min + \"'\" }},\n  {{ $json.heart_rate === null ? 'null' : \"'\" + JSON.stringify($json.heart_rate).replace(/'/g, \"''\") + \"'\" }},\n  {{ $json.hrv === null ? 'null' : \"'\" + JSON.stringify($json.hrv).replace(/'/g, \"''\") + \"'\" }},\n  {{ $json.movement_30_sec === null ? 'null' : \"'\" + $json.movement_30_sec + \"'\" }}\n)\nON CONFLICT (id) DO UPDATE SET\n  bedtime_start = EXCLUDED.bedtime_start,\n  bedtime_end = EXCLUDED.bedtime_end,\n  type = EXCLUDED.type,\n  total_sleep_duration = EXCLUDED.total_sleep_duration,\n  deep_sleep_duration = EXCLUDED.deep_sleep_duration,\n  rem_sleep_duration = EXCLUDED.rem_sleep_duration,\n  light_sleep_duration = EXCLUDED.light_sleep_duration,\n  awake_time = EXCLUDED.awake_time,\n  latency = EXCLUDED.latency,\n  efficiency = EXCLUDED.efficiency,\n  average_heart_rate = EXCLUDED.average_heart_rate,\n  lowest_heart_rate = EXCLUDED.lowest_heart_rate,\n  average_hrv = EXCLUDED.average_hrv,\n  average_breath = EXCLUDED.average_breath,\n  time_in_bed = EXCLUDED.time_in_bed,\n  restless_periods = EXCLUDED.restless_periods,\n  sleep_phase_5_min = EXCLUDED.sleep_phase_5_min,\n  heart_rate_5_min = EXCLUDED.heart_rate_5_min,\n  hrv_5_min = EXCLUDED.hrv_5_min,\n  movement_30_sec = EXCLUDED.movement_30_sec",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        0
+      ],
+      "id": "6a0b92cc-0a18-437c-82bc-59523acb6b33",
+      "name": "Upsert sleep",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_daily_sleep (\n  day, score, deep_sleep, efficiency, latency,\n  rem_sleep, restfulness, timing, total_sleep\n) VALUES (\n  '{{ $json.day }}',\n  {{ $json.score === null ? 'null' : $json.score }},\n  {{ $json.contributors?.deep_sleep === null || $json.contributors?.deep_sleep === undefined ? 'null' : $json.contributors.deep_sleep }},\n  {{ $json.contributors?.efficiency === null || $json.contributors?.efficiency === undefined ? 'null' : $json.contributors.efficiency }},\n  {{ $json.contributors?.latency === null || $json.contributors?.latency === undefined ? 'null' : $json.contributors.latency }},\n  {{ $json.contributors?.rem_sleep === null || $json.contributors?.rem_sleep === undefined ? 'null' : $json.contributors.rem_sleep }},\n  {{ $json.contributors?.restfulness === null || $json.contributors?.restfulness === undefined ? 'null' : $json.contributors.restfulness }},\n  {{ $json.contributors?.timing === null || $json.contributors?.timing === undefined ? 'null' : $json.contributors.timing }},\n  {{ $json.contributors?.total_sleep === null || $json.contributors?.total_sleep === undefined ? 'null' : $json.contributors.total_sleep }}\n)\nON CONFLICT (day) DO UPDATE SET\n  score = EXCLUDED.score,\n  deep_sleep = EXCLUDED.deep_sleep,\n  efficiency = EXCLUDED.efficiency,\n  latency = EXCLUDED.latency,\n  rem_sleep = EXCLUDED.rem_sleep,\n  restfulness = EXCLUDED.restfulness,\n  timing = EXCLUDED.timing,\n  total_sleep = EXCLUDED.total_sleep",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        160
+      ],
+      "id": "231afb51-d071-46b0-bb70-371343a036b1",
+      "name": "Upsert daily sleep score",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_daily_activity (\n  day, score, active_calories, average_met_minutes, equivalent_walking_distance,\n  high_activity_met_minutes, high_activity_time, inactivity_alerts,\n  low_activity_met_minutes, low_activity_time,\n  medium_activity_met_minutes, medium_activity_time,\n  meters_to_target, non_wear_time, resting_time,\n  sedentary_met_minutes, sedentary_time,\n  steps, target_calories, target_meters, total_calories,\n  meet_daily_targets, move_every_hour, recovery_time,\n  stay_active, training_frequency, training_volume\n) VALUES (\n  '{{ $json.day }}',\n  {{ $json.score === null ? 'null' : $json.score }},\n  {{ $json.active_calories === null ? 'null' : $json.active_calories }},\n  {{ $json.average_met_minutes === null ? 'null' : $json.average_met_minutes }},\n  {{ $json.equivalent_walking_distance === null ? 'null' : $json.equivalent_walking_distance }},\n  {{ $json.high_activity_met_minutes === null ? 'null' : $json.high_activity_met_minutes }},\n  {{ $json.high_activity_time === null ? 'null' : $json.high_activity_time }},\n  {{ $json.inactivity_alerts === null ? 'null' : $json.inactivity_alerts }},\n  {{ $json.low_activity_met_minutes === null ? 'null' : $json.low_activity_met_minutes }},\n  {{ $json.low_activity_time === null ? 'null' : $json.low_activity_time }},\n  {{ $json.medium_activity_met_minutes === null ? 'null' : $json.medium_activity_met_minutes }},\n  {{ $json.medium_activity_time === null ? 'null' : $json.medium_activity_time }},\n  {{ $json.meters_to_target === null ? 'null' : $json.meters_to_target }},\n  {{ $json.non_wear_time === null ? 'null' : $json.non_wear_time }},\n  {{ $json.resting_time === null ? 'null' : $json.resting_time }},\n  {{ $json.sedentary_met_minutes === null ? 'null' : $json.sedentary_met_minutes }},\n  {{ $json.sedentary_time === null ? 'null' : $json.sedentary_time }},\n  {{ $json.steps === null ? 'null' : $json.steps }},\n  {{ $json.target_calories === null ? 'null' : $json.target_calories }},\n  {{ $json.target_meters === null ? 'null' : $json.target_meters }},\n  {{ $json.total_calories === null ? 'null' : $json.total_calories }},\n  {{ $json.contributors?.meet_daily_targets === null || $json.contributors?.meet_daily_targets === undefined ? 'null' : $json.contributors.meet_daily_targets }},\n  {{ $json.contributors?.move_every_hour === null || $json.contributors?.move_every_hour === undefined ? 'null' : $json.contributors.move_every_hour }},\n  {{ $json.contributors?.recovery_time === null || $json.contributors?.recovery_time === undefined ? 'null' : $json.contributors.recovery_time }},\n  {{ $json.contributors?.stay_active === null || $json.contributors?.stay_active === undefined ? 'null' : $json.contributors.stay_active }},\n  {{ $json.contributors?.training_frequency === null || $json.contributors?.training_frequency === undefined ? 'null' : $json.contributors.training_frequency }},\n  {{ $json.contributors?.training_volume === null || $json.contributors?.training_volume === undefined ? 'null' : $json.contributors.training_volume }}\n)\nON CONFLICT (day) DO UPDATE SET\n  score = EXCLUDED.score,\n  active_calories = EXCLUDED.active_calories,\n  steps = EXCLUDED.steps,\n  total_calories = EXCLUDED.total_calories,\n  non_wear_time = EXCLUDED.non_wear_time,\n  meet_daily_targets = EXCLUDED.meet_daily_targets,\n  move_every_hour = EXCLUDED.move_every_hour,\n  recovery_time = EXCLUDED.recovery_time,\n  stay_active = EXCLUDED.stay_active,\n  training_frequency = EXCLUDED.training_frequency,\n  training_volume = EXCLUDED.training_volume",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        320
+      ],
+      "id": "27302a6f-7ac5-4174-85a4-7c621177be63",
+      "name": "Upsert activity",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_daily_readiness (\n  day, score, activity_balance, body_temperature,\n  hrv_balance, previous_day_activity, previous_night,\n  recovery_index, resting_heart_rate, sleep_balance,\n  temperature_deviation, temperature_trend_deviation\n) VALUES (\n  '{{ $json.day }}',\n  {{ $json.score === null ? 'null' : $json.score }},\n  {{ $json.contributors?.activity_balance === null || $json.contributors?.activity_balance === undefined ? 'null' : $json.contributors.activity_balance }},\n  {{ $json.contributors?.body_temperature === null || $json.contributors?.body_temperature === undefined ? 'null' : $json.contributors.body_temperature }},\n  {{ $json.contributors?.hrv_balance === null || $json.contributors?.hrv_balance === undefined ? 'null' : $json.contributors.hrv_balance }},\n  {{ $json.contributors?.previous_day_activity === null || $json.contributors?.previous_day_activity === undefined ? 'null' : $json.contributors.previous_day_activity }},\n  {{ $json.contributors?.previous_night === null || $json.contributors?.previous_night === undefined ? 'null' : $json.contributors.previous_night }},\n  {{ $json.contributors?.recovery_index === null || $json.contributors?.recovery_index === undefined ? 'null' : $json.contributors.recovery_index }},\n  {{ $json.contributors?.resting_heart_rate === null || $json.contributors?.resting_heart_rate === undefined ? 'null' : $json.contributors.resting_heart_rate }},\n  {{ $json.contributors?.sleep_balance === null || $json.contributors?.sleep_balance === undefined ? 'null' : $json.contributors.sleep_balance }},\n  {{ $json.temperature_deviation === null ? 'null' : $json.temperature_deviation }},\n  {{ $json.temperature_trend_deviation === null ? 'null' : $json.temperature_trend_deviation }}\n)\nON CONFLICT (day) DO UPDATE SET\n  score = EXCLUDED.score,\n  activity_balance = EXCLUDED.activity_balance,\n  body_temperature = EXCLUDED.body_temperature,\n  hrv_balance = EXCLUDED.hrv_balance,\n  previous_day_activity = EXCLUDED.previous_day_activity,\n  previous_night = EXCLUDED.previous_night,\n  recovery_index = EXCLUDED.recovery_index,\n  resting_heart_rate = EXCLUDED.resting_heart_rate,\n  sleep_balance = EXCLUDED.sleep_balance,\n  temperature_deviation = EXCLUDED.temperature_deviation,\n  temperature_trend_deviation = EXCLUDED.temperature_trend_deviation",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        480
+      ],
+      "id": "1f243ce5-7616-437e-a84f-c412a30ca1de",
+      "name": "Upsert readiness",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_daily_stress (\n  day, stress_high, recovery_high, day_summary\n) VALUES (\n  '{{ $json.day }}',\n  {{ $json.stress_high === null ? 'null' : $json.stress_high }},\n  {{ $json.recovery_high === null ? 'null' : $json.recovery_high }},\n  {{ $json.day_summary === null ? 'null' : \"'\" + $json.day_summary + \"'\" }}\n)\nON CONFLICT (day) DO UPDATE SET\n  stress_high = EXCLUDED.stress_high,\n  recovery_high = EXCLUDED.recovery_high,\n  day_summary = EXCLUDED.day_summary",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        640
+      ],
+      "id": "f36d2841-db30-4969-b2e2-7a487479ed2b",
+      "name": "Upsert stress",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_workouts (\n  id, day, activity, calories, day_start, day_end,\n  distance, intensity, label, source\n) VALUES (\n  '{{ $json.id }}',\n  '{{ $json.day }}',\n  {{ $json.activity === null ? 'null' : \"'\" + $json.activity + \"'\" }},\n  {{ $json.calories === null ? 'null' : $json.calories }},\n  {{ $json.start_datetime === null || $json.start_datetime === undefined ? 'null' : \"'\" + $json.start_datetime + \"'\" }},\n  {{ $json.end_datetime === null || $json.end_datetime === undefined ? 'null' : \"'\" + $json.end_datetime + \"'\" }},\n  {{ $json.distance === null ? 'null' : $json.distance }},\n  {{ $json.intensity === null ? 'null' : \"'\" + $json.intensity + \"'\" }},\n  {{ $json.label === null ? 'null' : \"'\" + $json.label.replace(/'/g, \"''\") + \"'\" }},\n  {{ $json.source === null ? 'null' : \"'\" + $json.source + \"'\" }}\n)\nON CONFLICT (id) DO UPDATE SET\n  activity = EXCLUDED.activity,\n  calories = EXCLUDED.calories,\n  day_start = EXCLUDED.day_start,\n  day_end = EXCLUDED.day_end,\n  distance = EXCLUDED.distance,\n  intensity = EXCLUDED.intensity,\n  label = EXCLUDED.label",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        800
+      ],
+      "id": "9e249174-1ce2-4a50-8b40-680068e70107",
+      "name": "Upsert workouts",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_events (\n  id, tag_type_code, custom_name,\n  start_day, end_day, start_time, end_time, comment\n) VALUES (\n  '{{ $json.id }}',\n  {{ $json.tag_type_code === null ? 'null' : \"'\" + $json.tag_type_code + \"'\" }},\n  {{ $json.custom_name === null ? 'null' : \"'\" + $json.custom_name.replace(/'/g, \"''\") + \"'\" }},\n  {{ $json.start_day === null ? 'null' : \"'\" + $json.start_day + \"'\" }},\n  {{ $json.end_day === null ? 'null' : \"'\" + $json.end_day + \"'\" }},\n  {{ $json.start_time === null ? 'null' : \"'\" + $json.start_time + \"'\" }},\n  {{ $json.end_time === null ? 'null' : \"'\" + $json.end_time + \"'\" }},\n  {{ $json.comment === null ? 'null' : \"'\" + $json.comment.replace(/'/g, \"''\") + \"'\" }}\n)\nON CONFLICT (id) DO UPDATE SET\n  tag_type_code = EXCLUDED.tag_type_code,\n  custom_name = EXCLUDED.custom_name,\n  start_day = EXCLUDED.start_day,\n  end_day = EXCLUDED.end_day,\n  start_time = EXCLUDED.start_time,\n  end_time = EXCLUDED.end_time,\n  comment = EXCLUDED.comment",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        960
+      ],
+      "id": "f30c3d4d-d349-4217-b9e6-28df5e201762",
+      "name": "Upsert events",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO oura_heartrate (\n  timestamp, bpm, source\n) VALUES (\n  '{{ $json.timestamp }}',\n  {{ $json.bpm === null ? 'null' : $json.bpm }},\n  {{ $json.source === null ? 'null' : \"'\" + $json.source + \"'\" }}\n)\nON CONFLICT (timestamp) DO NOTHING",
+        "options": {
+          "queryBatching": "independently"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        1120
+      ],
+      "id": "61319cda-8b9d-40c4-a8a7-9d49ee492712",
+      "name": "Upsert heart rate",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH period_days AS (\n  SELECT DISTINCT start_day AS day\n  FROM oura_events\n  WHERE tag_type_code = 'tag_generic_period'\n),\nperiod_starts AS (\n  SELECT day AS start_day\n  FROM period_days pd\n  WHERE NOT EXISTS (\n    SELECT 1 FROM period_days pd2\n    WHERE pd2.day = pd.day - INTERVAL '1 day'\n  )\n),\ncycle_lengths AS (\n  SELECT\n    start_day,\n    LEAD(start_day) OVER (ORDER BY start_day) AS next_start,\n    LEAD(start_day) OVER (ORDER BY start_day) - start_day AS cycle_length\n  FROM period_starts\n),\nday_cycle AS (\n  SELECT\n    dr.day,\n    cl.start_day        AS cycle_start,\n    cl.cycle_length,\n    (dr.day - cl.start_day + 1) AS cycle_day,\n    dr.temperature_deviation    AS temp_deviation\n  FROM oura_daily_readiness dr\n  CROSS JOIN LATERAL (\n    SELECT start_day, cycle_length\n    FROM cycle_lengths\n    WHERE start_day <= dr.day\n    ORDER BY start_day DESC\n    LIMIT 1\n  ) cl\n  WHERE dr.day >= CURRENT_DATE - INTERVAL '5 days'\n    AND dr.temperature_deviation IS NOT NULL\n),\nphase_calc AS (\n  SELECT\n    dc.*,\n    CASE\n      WHEN EXISTS (\n        SELECT 1 FROM period_days pd WHERE pd.day = dc.day\n      )                                               THEN 'menstrual'\n      WHEN dc.cycle_day <= 13                         THEN 'follicular'\n      WHEN dc.temp_deviation > 0.15                   THEN 'luteal'\n      WHEN dc.cycle_day > 13                          THEN 'luteal'\n      ELSE                                                 'unknown'\n    END AS phase,\n    CASE\n      WHEN dc.temp_deviation < -0.1                   THEN 'low'\n      WHEN dc.temp_deviation BETWEEN -0.1 AND 0.1     THEN 'stable'\n      WHEN dc.temp_deviation BETWEEN 0.1 AND 0.3      THEN 'rising'\n      WHEN dc.temp_deviation > 0.3                    THEN 'high'\n      ELSE                                                 'unknown'\n    END AS temperature_phase\n  FROM day_cycle dc\n)\nINSERT INTO oura_cycles (\n  day, cycle_start, cycle_day, cycle_length, phase,\n  temperature_phase, temp_deviation,\n  is_period, has_migraine, has_pms, has_cramps\n)\nSELECT\n  pc.day,\n  pc.cycle_start,\n  pc.cycle_day,\n  pc.cycle_length,\n  pc.phase,\n  pc.temperature_phase,\n  pc.temp_deviation,\n  EXISTS (SELECT 1 FROM oura_events e\n          WHERE e.start_day = pc.day\n            AND e.tag_type_code = 'tag_generic_period')    AS is_period,\n  EXISTS (SELECT 1 FROM oura_events e\n          WHERE e.start_day = pc.day\n            AND e.tag_type_code = 'tag_generic_migraine')  AS has_migraine,\n  EXISTS (SELECT 1 FROM oura_events e\n          WHERE e.start_day = pc.day\n            AND e.tag_type_code = 'tag_generic_pms')       AS has_pms,\n  EXISTS (SELECT 1 FROM oura_events e\n          WHERE e.start_day = pc.day\n            AND e.tag_type_code = 'tag_generic_cramps')    AS has_cramps\nFROM phase_calc pc\nON CONFLICT (day) DO UPDATE SET\n  cycle_start       = EXCLUDED.cycle_start,\n  cycle_day         = EXCLUDED.cycle_day,\n  cycle_length      = EXCLUDED.cycle_length,\n  phase             = EXCLUDED.phase,\n  temperature_phase = EXCLUDED.temperature_phase,\n  temp_deviation    = EXCLUDED.temp_deviation,\n  is_period         = EXCLUDED.is_period,\n  has_migraine      = EXCLUDED.has_migraine,\n  has_pms           = EXCLUDED.has_pms,\n  has_cramps        = EXCLUDED.has_cramps;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1008,
+        592
+      ],
+      "id": "4e0dc4d4-d471-4300-9645-98f51dafc5d4",
+      "name": "Refresh oura_cycles",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        480
+      ],
+      "id": "64d7cec5-ba5f-4c05-80b3-22caeb275a56",
+      "name": "Every day at 10am"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set date range (last 3 days)": {
+      "main": [
+        [
+          {
+            "node": "Get sleep",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get daily sleep score",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get activity",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get readiness",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get stress",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get workouts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get events/tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pass dates for heart rate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pass dates for heart rate": {
+      "main": [
+        [
+          {
+            "node": "Get heart rate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get sleep": {
+      "main": [
+        [
+          {
+            "node": "Split sleep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get daily sleep score": {
+      "main": [
+        [
+          {
+            "node": "Split daily sleep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get activity": {
+      "main": [
+        [
+          {
+            "node": "Split activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get readiness": {
+      "main": [
+        [
+          {
+            "node": "Split readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get stress": {
+      "main": [
+        [
+          {
+            "node": "Split stress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get workouts": {
+      "main": [
+        [
+          {
+            "node": "Split workouts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get events/tags": {
+      "main": [
+        [
+          {
+            "node": "Split events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get heart rate": {
+      "main": [
+        [
+          {
+            "node": "Split heart rate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split sleep": {
+      "main": [
+        [
+          {
+            "node": "Upsert sleep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split daily sleep": {
+      "main": [
+        [
+          {
+            "node": "Upsert daily sleep score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split activity": {
+      "main": [
+        [
+          {
+            "node": "Upsert activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split readiness": {
+      "main": [
+        [
+          {
+            "node": "Upsert readiness",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Refresh oura_cycles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split stress": {
+      "main": [
+        [
+          {
+            "node": "Upsert stress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split workouts": {
+      "main": [
+        [
+          {
+            "node": "Upsert workouts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split events": {
+      "main": [
+        [
+          {
+            "node": "Upsert events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Refresh oura_cycles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split heart rate": {
+      "main": [
+        [
+          {
+            "node": "Upsert heart rate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every day at 10am": {
+      "main": [
+        [
+          {
+            "node": "Set date range (last 3 days)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Warsaw",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "YOUR_VERSION_ID",
+  "meta": {},
+  "id": "H8nVyPeKkXz5-LuEojRQz",
+  "tags": []
+}
