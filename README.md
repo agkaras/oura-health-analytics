@@ -2,7 +2,11 @@
 
 > **v1.0 — initial release.** A working prototype built as a personal learning project and portfolio piece. Architecture and code quality are actively being improved.
 
-An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. Ask questions in natural language and get evidence-based analysis of your sleep, recovery, activity, stress, menstrual cycle, and migraine patterns.
+An end-to-end personal health analytics platform that ingests Oura Ring biometric data into a PostgreSQL database and exposes it through an AI-powered conversational interface. The system is built as a workflow-orchestrated pipeline using n8n, handling data ingestion, scheduling, and AI routing, with PostgreSQL for analytical queries and Streamlit as the user interface.
+
+Its core capability is **pattern discovery based on custom user-defined tag**s (e.g., symptoms, lifestyle factors), with built-in temporal analysis of physiological changes before, during, and after tagged events. This allows users to uncover relationships between various personal events and signals such as HRV, sleep, and recovery — a level of insight not available in the native Oura app. Summary and trend conversational analyses are possible as well.
+
+Ask questions in natural language and receive structured, evidence-based insights into your sleep, recovery, activity, stress, menstrual cycle, and personalized health recommendations. 
 
 ---
 
@@ -10,11 +14,13 @@ An end-to-end personal health analytics platform that ingests Oura Ring biometri
 
 **Example queries the system can answer:**
 
-- *"How does my sleep look in the days around a migraine?"*
+- *"What happens to my resting heart rate during and after having a cold?"*
 - *"What tags correlate with low HRV?"*
+- _"Do I show early physiological signals before tagged stress events?"_
 - *"Show me my readiness trend over the last 30 days"*
-- *"What is my migraine risk today given my current cycle day?"*
+- *"What is my migraine risk today based on my previous data?"*
 - *"Give me a health overview of the past week"*
+
 
 The AI response always includes today's actual metrics — HRV in milliseconds, resting heart rate in bpm, cycle day and phase, stress minutes — pulled from the correct sensor columns rather than Oura's readiness contributor scores.
 
@@ -35,7 +41,7 @@ Oura Ring API v2
        │         └── rolling 7-day window + refreshes oura_cycles
        │
        └── 3. AI chat workflow         ← called by Streamlit on each message
-               ├── Gemini classifier   → structured routing params
+               ├── AI classifier       → structured routing params
                ├── Normalizer (JS)     → validation & edge-case handling
                ├── Switch node         → 5 analysis branches
                │     ├── event_pattern    (tag-based, with day offsets)
@@ -45,7 +51,7 @@ Oura Ring API v2
                │     └── cycle_analysis   (menstrual cycle biomarkers)
                ├── PostgreSQL queries  → pre-aggregated results
                ├── Context Builder     → structured JSON for AI
-               └── Claude (Anthropic)  → natural language analysis
+               └── AI Agent            → natural language analysis
 
 Streamlit (chat.py)
        │
@@ -76,7 +82,7 @@ Streamlit (chat.py)
 | Database | PostgreSQL |
 | Orchestration | n8n (self-hosted, Docker) |
 | Classification LLM | Google Gemini (structured JSON output) |
-| Analysis LLM | Anthropic Claude |
+| Analysis LLM | Google Gemini |
 | Chat interface | Streamlit |
 | Infrastructure | Docker |
 
@@ -119,7 +125,7 @@ oura-health-analytics/
 - Oura Ring with API v2 personal access token ([get one here](https://cloud.ouraring.com/personal-access-tokens))
 - PostgreSQL instance (local or remote)
 - n8n self-hosted ([Docker quickstart](https://docs.n8n.io/hosting/installation/docker/))
-- Google Gemini API key (free example, can be changed for preferred AI model)
+- Google Gemini API key (example - free, can be changed for preferred AI model e.g., Claude)
 - Python 3.9+ with Streamlit
 
 ### 1. Database
@@ -131,9 +137,9 @@ Create the required tables. Schema file coming in next release — in the meanti
 - Open n8n → **Settings → Import workflow**
 - Import all three JSON files from the `workflows/` folder
 - In each workflow, update credentials:
-  - Replace `YOUR_POSTGRES_CREDENTIAL_NAME` with your PostgreSQL credential
-  - Replace `YOUR_OURA_CREDENTIAL_NAME` with your Oura API token credential
-  - Replace `YOUR_GEMINI_CREDENTIAL_NAME` with your Gemini credential
+  - PostgreSQL
+  - Oura API token
+  - Gemini credential
 
 ### 3. Run historical backfill
 
