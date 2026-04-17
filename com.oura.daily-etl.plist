@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Unique identifier -->
+    <key>Label</key>
+    <string>com.oura.daily-etl</string>
+
+    <!-- Command: adjust paths to match your setup -->
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Option A: if using venv -->
+        <string>/Users/YOUR_USERNAME/oura-pipeline/.venv/bin/python</string>
+        <!-- Option B: if using system python, replace with /usr/local/bin/python3 -->
+        <string>/Users/YOUR_USERNAME/oura-pipeline/oura_etl.py</string>
+    </array>
+
+    <!-- Working directory -->
+    <key>WorkingDirectory</key>
+    <string>/Users/YOUR_USERNAME/oura-pipeline</string>
+
+    <!-- Run daily at 11:00 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>11</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Catch up if Mac was asleep at 11:00 -->
+    <key>StartInterval</key>
+    <integer>86400</integer>
+
+    <!-- Logging -->
+    <key>StandardOutPath</key>
+    <string>/Users/YOUR_USERNAME/oura-pipeline/logs/launchd_stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOUR_USERNAME/oura-pipeline/logs/launchd_stderr.log</string>
+
+    <!-- Keep alive: restart if it crashes (only relevant for daemon mode) -->
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
