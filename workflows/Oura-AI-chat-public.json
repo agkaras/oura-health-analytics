@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1472,
-        608
+        1664,
+        1840
       ],
-      "id": "82ceb8a2-e84f-4867-b1a3-da99d29597a2",
+      "id": "79579372-1654-4de1-aefc-afe710854298",
       "name": "Webhook",
       "webhookId": "YOUR_WEBHOOK_ID"
     },
@@ -25,24 +25,24 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1248,
-        704
+        1888,
+        1840
       ],
-      "id": "24cdcc4d-8f65-4b7c-a93b-c1b06039a753",
+      "id": "27ca05a3-94e3-49b0-9a5c-6c16318d29be",
       "name": "Normalize question"
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"domains\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"sleep\",\n          \"activity\",\n          \"readiness\",\n          \"stress\",\n          \"heart\",\n          \"tags\",\n          \"overall\"\n        ]\n      },\n      \"minItems\": 1\n    },\n    \"analysis_type\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"event_pattern\",\n        \"trend\",\n        \"summary\",\n        \"cycle_analysis\"\n      ]\n    },\n    \"time_range_days\": {\n      \"type\": \"number\",\n      \"minimum\": 0\n    },\n    \"event_hint\": {\n      \"type\": \"string\"\n    },\n    \"offset_days\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"-2\",\n          \"-1\",\n          \"0\",\n          \"1\",\n          \"2\"\n        ]\n      }\n    },\n    \"inverse_lookup\": {\n      \"type\": \"boolean\"\n    },\n    \"metric_hint\": {\n      \"type\": \"string\"\n    },\n    \"needs_db\": {\n      \"type\": \"boolean\"\n    }\n  },\n  \"required\": [\n    \"domains\",\n    \"analysis_type\",\n    \"time_range_days\"\n  ],\n  \"additionalProperties\": false\n}"
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"domains\": {\"type\": \"array\", \"items\": {\"type\": \"string\", \"enum\": [\"sleep\", \"activity\", \"readiness\", \"stress\", \"heart\", \"tags\", \"overall\"]}, \"minItems\": 1}, \"analysis_type\": {\"type\": \"string\", \"enum\": [\"event_pattern\", \"trend\", \"summary\", \"cycle_analysis\"]}, \"time_range_days\": {\"type\": \"number\", \"minimum\": 0}, \"event_hint\": {\"type\": \"string\"}, \"offset_days\": {\"type\": \"array\", \"items\": {\"type\": \"string\", \"enum\": [\"-2\", \"-1\", \"0\", \"1\", \"2\"]}}, \"inverse_lookup\": {\"type\": \"boolean\"}, \"metric_hint\": {\"type\": \"string\"}, \"needs_db\": {\"type\": \"boolean\"}, \"event_mode\": {\"type\": \"string\", \"enum\": [\"point\", \"span\"]}}, \"required\": [\"domains\", \"analysis_type\", \"time_range_days\"], \"additionalProperties\": false}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -656,
-        704
+        2464,
+        2064
       ],
-      "id": "62e2fe8b-9da9-4575-aaa4-e0d033ea28ba",
+      "id": "08721fcf-49c6-4971-b4ed-ac11e327ccd0",
       "name": "Structured Output Parser"
     },
     {
@@ -51,31 +51,31 @@
         "text": "={{ $json.question }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a health data classifier. Analyse the user question and extract structured parameters.\n\nRules:\n- if the question is in polish, translate to english before classifying\n- time_range_days: number of days of history to consider. Use 0 for full history. Default 30 for trend/summary.\n- analysis_type must be one of: event_pattern, trend, summary, cycle_analysis\n- If the question involves a specific health event, symptom, or tag (migraine, workout, alcohol, illness, travel, stress, etc): analysis_type = event_pattern, domains must include 'tags', event_hint = the event keyword in lowercase.\n- offset_days: which day offsets to analyse. For events that might CAUSE effects (e.g. hard workout, alcohol, late night): use [0,1]. For events that might BE CAUSED (e.g. migraine, illness — look for precursors): use [-2,-1,0,1]. Default: [-1,0,1].\n- inverse_lookup: true when the user asks 'what causes my X to drop' or 'what is associated with bad/low X'. Set metric_hint to the metric name.\n- For trend questions: analysis_type = trend, time_range_days = 30, 60, or 90.\n- For summary / overview questions: analysis_type = summary, time_range_days = 7 or 30.\n- If the question involves menstrual cycle, cycle phases, period, ovulation: analysis_type = cycle_analysis, domains must include 'tags'.\n- domains: include all relevant domains mentioned or implied.\n- needs_db: set to false if the question is a follow-up interpretation, consequence, or general health question that does NOT require fetching new data from the database (e.g. \"what does this mean for my blood tests?\", \"what should I do about this?\", \"why might that happen?\"). Set to true for all questions that require biometric data (events, trends, summaries, cycles)."
+          "systemMessage": "You are a health data classifier. Analyse the user question and extract structured parameters.\n\nRules:\n- if the question is in polish, translate to english before classifying\n- time_range_days: number of days of history to consider. Use 0 for full history. Default 30 for trend/summary.\n- analysis_type must be one of: event_pattern, trend, summary, cycle_analysis\n- If the question involves a specific health event, symptom, tag, OR workout type (migraine, pilates, yoga, running, alcohol, illness, travel, stress, etc): analysis_type = event_pattern, domains must include 'tags', event_hint = the event keyword in lowercase. Workout names are matched against BOTH the `activity` column AND the `label` column in oura_workouts (e.g. label='Reformer Pilates' while activity='other'), so use the user's workout name as event_hint.\n- offset_days: which day offsets to analyse. For events that might CAUSE effects (e.g. hard workout, alcohol, late night): use [0,1]. For events that might BE CAUSED (e.g. migraine, illness — look for precursors): use [-2,-1,0,1]. Default: [-1,0,1].\n- inverse_lookup: true when the user asks 'what causes my X to drop' or 'what is associated with bad/low X'. Set metric_hint to the metric name.\n- For trend questions: analysis_type = trend, time_range_days = 30, 60, or 90.\n- For summary / overview questions: analysis_type = summary, time_range_days = 7 or 30.\n- If the question involves menstrual cycle, cycle phases, period, ovulation: analysis_type = cycle_analysis, domains must include 'tags'.\n- domains: include all relevant domains mentioned or implied.\n- needs_db: set to false if the question is a follow-up interpretation, consequence, or general health question that does NOT require fetching new data from the database (e.g. \"what does this mean for my blood tests?\", \"what should I do about this?\", \"why might that happen?\"). Set to true for all questions that require biometric data (events, trends, summaries, cycles).\n- event_mode: classify how this event/tag is typically used:\n  * \"span\" = continuous multi-day periods (medication course, travel, illness, diet change, injury) — tag persists for many consecutive days\n  * \"point\" = discrete episodes (migraine, hangover, alcohol, hard workout, stress event) — each occurrence is standalone\n  Default to \"point\" if unclear."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -800,
-        480
+        2336,
+        1840
       ],
-      "id": "d8da48ae-835b-49c0-be59-5277ea507a46",
+      "id": "2fd16530-08ac-42c5-917c-8ec95d490c09",
       "name": "Classifier",
       "retryOnFail": true,
       "maxTries": 2
     },
     {
       "parameters": {
-        "jsCode": "const raw = $json.output ?? $json;\nconst needs_db = raw.needs_db !== false; // default true\nif (!needs_db) {\n  return [{ json: { analysis_type: 'followup', needs_db: false,\n    domains: [], time_range_days: 0, event_hint: null,\n    offset_days: [-1,0,1], inverse_lookup: false, metric_hint: null } }];\n}\n\n\nconst domains = Array.isArray(raw.domains) ? raw.domains : ['overall'];\nconst analysisType = typeof raw.analysis_type === 'string' ? raw.analysis_type : 'summary';\nlet timeRange = (raw.time_range_days === null || raw.time_range_days === undefined) ? 30 : Number(raw.time_range_days);\nconst eventHint = (typeof raw.event_hint === 'string' && raw.event_hint.trim() !== '') ? raw.event_hint.toLowerCase().trim() : null;\nconst inverseLookup = raw.inverse_lookup === true;\nconst metricHint = (typeof raw.metric_hint === 'string' && raw.metric_hint.trim() !== '') ? raw.metric_hint.toLowerCase().trim() : null;\n\nlet offsetDays = [-1, 0, 1];\nif (Array.isArray(raw.offset_days) && raw.offset_days.length > 0) {\n  offsetDays = raw.offset_days.map(Number).filter(n => !isNaN(n) && n >= -2 && n <= 2);\n}\n\nconst isCycle = analysisType === 'cycle_analysis';\nconst isEvent = !isCycle && (analysisType === 'event_pattern' || (domains.includes('tags') && eventHint));\nconst finalAnalysisType = isEvent ? 'event_pattern' : analysisType;\nconst finalDomains = isEvent ? Array.from(new Set([...domains, 'tags'])) : domains;\n\nif (isEvent) {\n  timeRange = 0;\n  if (!inverseLookup && !eventHint) throw new Error('event_pattern requires event_hint or inverse_lookup=true with metric_hint');\n  if (inverseLookup && !metricHint) throw new Error('inverse_lookup requires metric_hint');\n}\n\nif (!isEvent && (Number.isNaN(timeRange) || timeRange <= 0)) timeRange = 30;\n\nreturn [{ json: { analysis_type: finalAnalysisType, domains: finalDomains, time_range_days: timeRange, event_hint: eventHint, offset_days: offsetDays, inverse_lookup: inverseLookup, metric_hint: metricHint } }];"
+        "jsCode": "const raw = $json.output ?? $json;\nconst needs_db = raw.needs_db !== false; // default true\nif (!needs_db) {\n  return [{ json: { analysis_type: 'followup', needs_db: false,\n    domains: [], time_range_days: 0, event_hint: null,\n    offset_days: [-1,0,1], inverse_lookup: false, metric_hint: null } }];\n}\n\n\nconst domains = Array.isArray(raw.domains) ? raw.domains : ['overall'];\nconst analysisType = typeof raw.analysis_type === 'string' ? raw.analysis_type : 'summary';\nlet timeRange = (raw.time_range_days === null || raw.time_range_days === undefined) ? 30 : Number(raw.time_range_days);\nconst eventHint = (typeof raw.event_hint === 'string' && raw.event_hint.trim() !== '') ? raw.event_hint.toLowerCase().trim() : null;\nconst inverseLookup = raw.inverse_lookup === true;\nconst metricHint = (typeof raw.metric_hint === 'string' && raw.metric_hint.trim() !== '') ? raw.metric_hint.toLowerCase().trim() : null;\n\nlet offsetDays = [-1, 0, 1];\nif (Array.isArray(raw.offset_days) && raw.offset_days.length > 0) {\n  offsetDays = raw.offset_days.map(Number).filter(n => !isNaN(n) && n >= -2 && n <= 2);\n}\n\nconst isCycle = analysisType === 'cycle_analysis';\nconst isEvent = !isCycle && (analysisType === 'event_pattern' || (domains.includes('tags') && eventHint));\nconst finalAnalysisType = isEvent ? 'event_pattern' : analysisType;\nconst finalDomains = isEvent ? Array.from(new Set([...domains, 'tags'])) : domains;\n\nif (isEvent) {\n  timeRange = 0;\n  if (!inverseLookup && !eventHint) throw new Error('event_pattern requires event_hint or inverse_lookup=true with metric_hint');\n  if (inverseLookup && !metricHint) throw new Error('inverse_lookup requires metric_hint');\n}\n\nif (!isEvent && (Number.isNaN(timeRange) || timeRange <= 0)) timeRange = 30;\n\n\nconst eventMode = (typeof raw.event_mode === 'string' && raw.event_mode.trim() !== '') ? raw.event_mode.trim() : 'point';\nreturn [{ json: { analysis_type: finalAnalysisType, domains: finalDomains, time_range_days: timeRange, event_hint: eventHint, offset_days: offsetDays, inverse_lookup: inverseLookup, metric_hint: metricHint, event_mode: eventMode } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -448,
-        480
+        2688,
+        1840
       ],
-      "id": "a2833032-694b-4055-92d2-ba2c4d955d3d",
+      "id": "e0c2f50c-c5f5-4e86-b4ef-fa4c7ed1cdf9",
       "name": "Normalizer"
     },
     {
@@ -239,33 +239,39 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        416
+        2912,
+        1776
       ],
-      "id": "086811bf-5c11-469a-b651-0ed2d428210f",
+      "id": "79e9c6ee-d1c9-4639-9c43-439a629f9e9c",
       "name": "Analysis type switch"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "-- EVENT PATTERN: wszystko w jednym SQL, zwraca zagregowane sekcje\n-- result_type: 'offset_avg' | 'baseline' | 'co_tag' | 'cycle_ctx' | 'event_meta' | 'today_metrics' | 'workout_ctx'\n-- $1 = event_hint\n\nWITH\n\n-- 1. Znajdź pasujące zdarzenia\nmatched_events AS (\n  SELECT\n    id AS event_id,\n    LOWER(COALESCE(custom_name, REPLACE(tag_type_code, 'tag_generic_', ''))) AS event_label,\n    tag_type_code, custom_name, comment,\n    start_day,\n    COALESCE(end_day, start_day) AS end_day\n  FROM oura_events\n  WHERE tag_type_code ILIKE '%' || $1 || '%'\n     OR custom_name   ILIKE '%' || $1 || '%'\n),\n\n-- 2. Rozwiń zdarzenia na dni kalendarza\nevent_days AS (\n  SELECT\n    e.event_id, e.event_label, e.start_day AS event_start_day, e.end_day AS event_end_day,\n    gs.day::date AS base_day\n  FROM matched_events e,\n       generate_series(e.start_day, e.end_day, interval '1 day') AS gs(day)\n),\n\n-- 3. Dodaj offsety\noffsets AS (\n  SELECT\n    ed.event_id, ed.event_label, ed.event_start_day, ed.event_end_day,\n    o.offset_val AS offset_day,\n    (ed.base_day + (o.offset_val || ' days')::interval)::date AS feature_date\n  FROM event_days ed\n  CROSS JOIN (SELECT unnest(ARRAY[-1,0,1]) AS offset_val) o\n),\n\n-- 4. Pobierz metryki dla każdej daty offsetu\nfeatures AS (\n  SELECT\n    o.event_id, o.event_label, o.offset_day, o.feature_date,\n    o.event_start_day, o.event_end_day,\n    ds.score        AS sleep_score,\n    ds.deep_sleep, ds.efficiency AS sleep_efficiency, ds.rem_sleep, ds.total_sleep,\n    dr.score        AS readiness_score,\n    dr.temperature_deviation, dr.hrv_balance, dr.resting_heart_rate, dr.recovery_index,\n    da.score        AS activity_score, da.active_calories, da.steps, da.high_activity_time,\n    ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n    sl.average_hrv, sl.lowest_heart_rate, sl.average_heart_rate AS sleep_avg_hr, sl.restless_periods\n  FROM offsets o\n  LEFT JOIN oura_daily_sleep     ds  ON ds.day  = o.feature_date\n  LEFT JOIN oura_daily_readiness dr  ON dr.day  = o.feature_date\n  LEFT JOIN oura_daily_activity  da  ON da.day  = o.feature_date\n  LEFT JOIN oura_daily_stress    dst ON dst.day = o.feature_date\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep\n    WHERE day = o.feature_date AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n),\n\n-- 5. ZAGREGUJ per offset (nie zwracaj surowych wierszy!)\noffset_averages AS (\n  SELECT\n    'offset_avg'                    AS result_type,\n    offset_day::text                AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(sleep_score))         AS sleep_score,\n    ROUND(AVG(deep_sleep))          AS deep_sleep,\n    ROUND(AVG(sleep_efficiency))    AS sleep_efficiency,\n    ROUND(AVG(rem_sleep))           AS rem_sleep,\n    ROUND(AVG(total_sleep))         AS total_sleep,\n    ROUND(AVG(readiness_score))     AS readiness_score,\n    ROUND(AVG(temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(hrv_balance))         AS hrv_balance,\n    ROUND(AVG(resting_heart_rate))  AS resting_heart_rate,\n    ROUND(AVG(recovery_index))      AS recovery_index,\n    ROUND(AVG(activity_score))      AS activity_score,\n    ROUND(AVG(active_calories))     AS active_calories,\n    ROUND(AVG(steps))               AS steps,\n    ROUND(AVG(stress_high_min))     AS stress_high_min,\n    ROUND(AVG(recovery_high_min))   AS recovery_high_min,\n    ROUND(AVG(average_hrv))         AS average_hrv,\n    ROUND(AVG(lowest_heart_rate))   AS lowest_heart_rate,\n    ROUND(AVG(sleep_avg_hr))        AS sleep_avg_hr,\n    ROUND(AVG(restless_periods))    AS restless_periods\n  FROM features\n  GROUP BY offset_day\n),\n\n-- 6. Baseline — dni bez zdarzenia\nevent_days_set AS (\n  SELECT DISTINCT\n    generate_series(start_day, COALESCE(end_day, start_day), interval '1 day')::date AS d\n  FROM oura_events\n  WHERE tag_type_code ILIKE '%' || $1 || '%'\n     OR custom_name   ILIKE '%' || $1 || '%'\n),\nbaseline AS (\n  SELECT\n    'baseline'                      AS result_type,\n    'baseline'                      AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(ds.score))            AS sleep_score,\n    ROUND(AVG(ds.deep_sleep))       AS deep_sleep,\n    ROUND(AVG(ds.efficiency))       AS sleep_efficiency,\n    ROUND(AVG(ds.rem_sleep))        AS rem_sleep,\n    ROUND(AVG(ds.total_sleep))      AS total_sleep,\n    ROUND(AVG(dr.score))            AS readiness_score,\n    ROUND(AVG(dr.temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(dr.hrv_balance))      AS hrv_balance,\n    ROUND(AVG(dr.resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(dr.recovery_index))   AS recovery_index,\n    ROUND(AVG(da.score))            AS activity_score,\n    ROUND(AVG(da.active_calories))  AS active_calories,\n    ROUND(AVG(da.steps))            AS steps,\n    ROUND(AVG(dst.stress_high / 60.0))   AS stress_high_min,\n    ROUND(AVG(dst.recovery_high / 60.0)) AS recovery_high_min,\n    ROUND(AVG(sl.average_hrv))      AS average_hrv,\n    ROUND(AVG(sl.lowest_heart_rate)) AS lowest_heart_rate,\n    ROUND(AVG(sl.average_heart_rate)) AS sleep_avg_hr,\n    ROUND(AVG(sl.restless_periods)) AS restless_periods\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  WHERE ds.day NOT IN (SELECT d FROM event_days_set)\n    AND ds.score IS NOT NULL\n),\n\n-- 7. Co-occurring tags (zagregowane, max 20)\nco_tags AS (\n  SELECT\n    'co_tag'                          AS result_type,\n    LOWER(COALESCE(e.custom_name, REPLACE(e.tag_type_code, 'tag_generic_', ''))) AS label,\n    COUNT(DISTINCT me.event_id)       AS n,\n    NULL::bigint AS sleep_score, NULL::bigint AS deep_sleep,\n    NULL::bigint AS sleep_efficiency, NULL::bigint AS rem_sleep,\n    NULL::bigint AS total_sleep, NULL::bigint AS readiness_score,\n    NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM matched_events me\n  JOIN oura_events e\n    ON e.start_day BETWEEN me.start_day - INTERVAL '2 days'\n                       AND me.end_day   + INTERVAL '2 days'\n  WHERE NOT (\n    e.tag_type_code ILIKE '%' || $1 || '%'\n    OR COALESCE(e.custom_name,'') ILIKE '%' || $1 || '%'\n  )\n  GROUP BY e.tag_type_code, e.custom_name\n  HAVING COUNT(DISTINCT me.event_id) >= 2\n  ORDER BY COUNT(DISTINCT me.event_id) DESC\n  LIMIT 20\n),\n\n-- 8. Cycle context (zagregowany per faza)\ncycle_ctx AS (\n  SELECT\n    'cycle_ctx'             AS result_type,\n    oc.phase                AS label,\n    COUNT(*)                AS n,\n    ROUND(COUNT(*) FILTER (WHERE oc.has_migraine) * 100.0 / NULLIF(COUNT(*),0)) AS sleep_score,\n    ROUND(AVG(oc.temp_deviation)::numeric, 3)::bigint AS deep_sleep,\n    ROUND(AVG(ds.score))    AS sleep_efficiency,\n    ROUND(AVG(dr.score))    AS rem_sleep,\n    ROUND(AVG(sl.average_hrv)) AS total_sleep,\n    NULL::bigint AS readiness_score, NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM oura_cycles oc\n  LEFT JOIN oura_daily_sleep     ds ON ds.day = oc.day\n  LEFT JOIN oura_daily_readiness dr ON dr.day = oc.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv FROM oura_sleep\n    WHERE day = oc.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  GROUP BY oc.phase\n),\n\n-- 9. Meta: liczba zdarzeń i lista\nevent_meta AS (\n  SELECT\n    'event_meta'            AS result_type,\n    event_label             AS label,\n    COUNT(DISTINCT event_id) AS n,\n    MIN(event_start_day::text::date - CURRENT_DATE)::bigint AS sleep_score,\n    NULL::bigint AS deep_sleep, NULL::bigint AS sleep_efficiency,\n    NULL::bigint AS rem_sleep, NULL::bigint AS total_sleep,\n    NULL::bigint AS readiness_score, NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM features\n  GROUP BY event_label\n),\n\n-- 10. Dzisiejsze metryki — poprawne kolumny (average_hrv w ms, lowest_heart_rate w bpm, dzień cyklu)\ntoday_metrics AS (\n  SELECT\n    'today_metrics'                                                     AS result_type,\n    CURRENT_DATE::text\n      || '|cycle_day=' || COALESCE(c.cycle_day::text, '?')\n      || '|phase='     || COALESCE(c.phase, '?')\n      || '|is_period=' || COALESCE(c.is_period::text, '?')             AS label,\n    1                                                                   AS n,\n    r.score                                                             AS sleep_score,\n    c.cycle_day                                                         AS deep_sleep,\n    s.efficiency                                                        AS sleep_efficiency,\n    ROUND(s.total_sleep_duration / 60.0)                                AS rem_sleep,\n    s.restless_periods                                                  AS total_sleep,\n    r.score                                                             AS readiness_score,\n    r.temperature_deviation,\n    r.hrv_balance,\n    r.resting_heart_rate,\n    r.recovery_index,\n    a.score                                                             AS activity_score,\n    a.active_calories,\n    a.steps,\n    ROUND(dst.stress_high   / 60.0)                                     AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0)                                     AS recovery_high_min,\n    s.average_hrv,\n    s.lowest_heart_rate,\n    ROUND(s.average_heart_rate)                                         AS sleep_avg_hr,\n    s.restless_periods                                                  AS restless_periods\n  FROM oura_sleep s\n  LEFT JOIN oura_daily_readiness r  ON r.day = s.day\n  LEFT JOIN oura_daily_activity  a  ON a.day = s.day\n  LEFT JOIN oura_daily_stress   dst ON dst.day = s.day\n  LEFT JOIN oura_cycles          c  ON c.day = s.day\n  WHERE s.day = CURRENT_DATE AND s.type = 'long_sleep'\n),\n\n-- 11. Treningi w oknie ±3 dni od zdarzeń (workout_ctx)\n-- label: activity|intensity|offset=N (N = dni względem zdarzenia)\n-- sleep_score=avg_calories, deep_sleep=avg_distance_m\nworkout_ctx AS (\n  SELECT\n    'workout_ctx'                                                       AS result_type,\n    w.activity\n      || '|' || COALESCE(w.intensity, '?')\n      || '|offset='  || (w.day - me.start_day)::text                   AS label,\n    COUNT(DISTINCT me.event_id)                                         AS n,\n    ROUND(AVG(w.calories))::bigint                                      AS sleep_score,\n    ROUND(AVG(w.distance))::bigint                                      AS deep_sleep,\n    NULL::bigint AS sleep_efficiency, NULL::bigint AS rem_sleep,\n    NULL::bigint AS total_sleep, NULL::bigint AS readiness_score,\n    NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM matched_events me\n  JOIN oura_workouts w\n    ON w.day BETWEEN me.start_day - INTERVAL '3 days'\n                 AND me.end_day   + INTERVAL '1 day'\n  GROUP BY w.activity, w.intensity, (w.day - me.start_day)\n)\n\nSELECT * FROM offset_averages\nUNION ALL SELECT * FROM baseline\nUNION ALL SELECT * FROM co_tags\nUNION ALL SELECT * FROM cycle_ctx\nUNION ALL SELECT * FROM event_meta\nUNION ALL SELECT * FROM today_metrics\nUNION ALL SELECT * FROM workout_ctx\nORDER BY result_type, label;",
+        "query": "-- EVENT PATTERN: zwraca sekcje zależne od event_mode\n-- $1 = event_hint, $2 = event_mode ('point' | 'span')\n-- point: offset_avg per -1/0/1 (agregat wszystkich wystąpień)\n-- span:  pre_period | during (każdy dzień osobno) | post_period\n\nWITH\n\n-- 1. Znajdź pasujące zdarzenia (tagi + workouty)\nmatched_events AS (\n  SELECT\n    id AS event_id,\n    LOWER(COALESCE(custom_name, REPLACE(tag_type_code, 'tag_generic_', ''))) AS event_label,\n    tag_type_code, custom_name, comment,\n    start_day,\n    COALESCE(end_day, start_day) AS end_day\n  FROM oura_events\n  WHERE tag_type_code ILIKE '%' || $1 || '%'\n     OR custom_name   ILIKE '%' || $1 || '%'\n  UNION ALL\n  SELECT\n    id AS event_id,\n    LOWER(COALESCE(label, activity)) AS event_label,\n    'workout' AS tag_type_code,\n    COALESCE(label, activity) AS custom_name,\n    intensity || ' | ' || calories || ' kcal' AS comment,\n    day AS start_day,\n    day AS end_day\n  FROM oura_workouts\n  WHERE activity ILIKE '%' || $1 || '%'\n     OR label    ILIKE '%' || $1 || '%'\n),\n\n-- 2. Granice całego spanu (min start, max end)\nevent_span AS (\n  SELECT\n    MIN(start_day) AS span_start,\n    MAX(end_day)   AS span_end\n  FROM matched_events\n),\n\n-- 3. Rozwiń zdarzenia na dni kalendarza\nevent_days AS (\n  SELECT\n    e.event_id, e.event_label, e.start_day AS event_start_day, e.end_day AS event_end_day,\n    gs.day::date AS base_day\n  FROM matched_events e,\n       generate_series(e.start_day, e.end_day, interval '1 day') AS gs(day)\n),\n\n-- 4. Dodaj offsety (point: -1,0,1 | span: tylko 0 — pre/post liczone osobno)\noffsets AS (\n  SELECT\n    ed.event_id, ed.event_label, ed.event_start_day, ed.event_end_day,\n    o.offset_val AS offset_day,\n    (ed.base_day + (o.offset_val || ' days')::interval)::date AS feature_date\n  FROM event_days ed\n  CROSS JOIN (SELECT unnest(ARRAY[-1,0,1]) AS offset_val) o\n),\n\n-- 5. Pobierz metryki dla każdej daty offsetu\nfeatures AS (\n  SELECT\n    o.event_id, o.event_label, o.offset_day, o.feature_date,\n    o.event_start_day, o.event_end_day,\n    ds.score        AS sleep_score,\n    ds.deep_sleep, ds.efficiency AS sleep_efficiency, ds.rem_sleep, ds.total_sleep,\n    dr.score        AS readiness_score,\n    dr.temperature_deviation, dr.hrv_balance, dr.resting_heart_rate, dr.recovery_index,\n    da.score        AS activity_score, da.active_calories, da.steps, da.high_activity_time,\n    ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n    sl.average_hrv, sl.lowest_heart_rate, sl.average_heart_rate AS sleep_avg_hr, sl.restless_periods\n  FROM offsets o\n  LEFT JOIN oura_daily_sleep     ds  ON ds.day  = o.feature_date\n  LEFT JOIN oura_daily_readiness dr  ON dr.day  = o.feature_date\n  LEFT JOIN oura_daily_activity  da  ON da.day  = o.feature_date\n  LEFT JOIN oura_daily_stress    dst ON dst.day = o.feature_date\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep\n    WHERE day = o.feature_date AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n),\n\n-- 6a. POINT MODE: agregat per offset (-1 / 0 / 1)\noffset_averages AS (\n  SELECT\n    'offset_avg'                    AS result_type,\n    offset_day::text                AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(sleep_score))         AS sleep_score,\n    ROUND(AVG(deep_sleep))          AS deep_sleep,\n    ROUND(AVG(sleep_efficiency))    AS sleep_efficiency,\n    ROUND(AVG(rem_sleep))           AS rem_sleep,\n    ROUND(AVG(total_sleep))         AS total_sleep,\n    ROUND(AVG(readiness_score))     AS readiness_score,\n    ROUND(AVG(temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(hrv_balance))         AS hrv_balance,\n    ROUND(AVG(resting_heart_rate))  AS resting_heart_rate,\n    ROUND(AVG(recovery_index))      AS recovery_index,\n    ROUND(AVG(activity_score))      AS activity_score,\n    ROUND(AVG(active_calories))     AS active_calories,\n    ROUND(AVG(steps))               AS steps,\n    ROUND(AVG(stress_high_min))     AS stress_high_min,\n    ROUND(AVG(recovery_high_min))   AS recovery_high_min,\n    ROUND(AVG(average_hrv))         AS average_hrv,\n    ROUND(AVG(lowest_heart_rate))   AS lowest_heart_rate,\n    ROUND(AVG(sleep_avg_hr))        AS sleep_avg_hr,\n    ROUND(AVG(restless_periods))    AS restless_periods\n  FROM features\n  WHERE $2 IS DISTINCT FROM 'span'\n  GROUP BY offset_day\n),\n\n-- 6b. SPAN MODE: pre_period — 7 dni przed pierwszym tagiem\nspan_pre AS (\n  SELECT\n    'pre_period'                    AS result_type,\n    'pre_period'                    AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(ds.score))            AS sleep_score,\n    ROUND(AVG(ds.deep_sleep))       AS deep_sleep,\n    ROUND(AVG(ds.efficiency))       AS sleep_efficiency,\n    ROUND(AVG(ds.rem_sleep))        AS rem_sleep,\n    ROUND(AVG(ds.total_sleep))      AS total_sleep,\n    ROUND(AVG(dr.score))            AS readiness_score,\n    ROUND(AVG(dr.temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(dr.hrv_balance))      AS hrv_balance,\n    ROUND(AVG(dr.resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(dr.recovery_index))   AS recovery_index,\n    ROUND(AVG(da.score))            AS activity_score,\n    ROUND(AVG(da.active_calories))  AS active_calories,\n    ROUND(AVG(da.steps))            AS steps,\n    ROUND(AVG(dst.stress_high / 60.0))   AS stress_high_min,\n    ROUND(AVG(dst.recovery_high / 60.0)) AS recovery_high_min,\n    ROUND(AVG(sl.average_hrv))      AS average_hrv,\n    ROUND(AVG(sl.lowest_heart_rate)) AS lowest_heart_rate,\n    ROUND(AVG(sl.average_heart_rate)) AS sleep_avg_hr,\n    ROUND(AVG(sl.restless_periods)) AS restless_periods\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  CROSS JOIN event_span es\n  WHERE $2 = 'span'\n    AND ds.day BETWEEN es.span_start - INTERVAL '7 days' AND es.span_start - INTERVAL '1 day'\n    AND ds.score IS NOT NULL\n),\n\n-- 6c. SPAN MODE: during — każdy dzień z tagiem osobno\nspan_during AS (\n  SELECT DISTINCT ON (feature_date)\n    'during'                        AS result_type,\n    feature_date::text              AS label,\n    1                               AS n,\n    sleep_score,\n    deep_sleep,\n    sleep_efficiency,\n    rem_sleep,\n    total_sleep,\n    readiness_score,\n    temperature_deviation,\n    hrv_balance,\n    resting_heart_rate,\n    recovery_index,\n    activity_score,\n    active_calories,\n    steps,\n    stress_high_min,\n    recovery_high_min,\n    average_hrv,\n    lowest_heart_rate,\n    sleep_avg_hr,\n    restless_periods\n  FROM features\n  WHERE $2 = 'span' AND offset_day = 0\n  ORDER BY feature_date\n),\n\n-- 6d. SPAN MODE: post_period — 7 dni po ostatnim tagu (tylko dni które już minęły)\nspan_post AS (\n  SELECT\n    'post_period'                   AS result_type,\n    'post_period'                   AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(ds.score))            AS sleep_score,\n    ROUND(AVG(ds.deep_sleep))       AS deep_sleep,\n    ROUND(AVG(ds.efficiency))       AS sleep_efficiency,\n    ROUND(AVG(ds.rem_sleep))        AS rem_sleep,\n    ROUND(AVG(ds.total_sleep))      AS total_sleep,\n    ROUND(AVG(dr.score))            AS readiness_score,\n    ROUND(AVG(dr.temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(dr.hrv_balance))      AS hrv_balance,\n    ROUND(AVG(dr.resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(dr.recovery_index))   AS recovery_index,\n    ROUND(AVG(da.score))            AS activity_score,\n    ROUND(AVG(da.active_calories))  AS active_calories,\n    ROUND(AVG(da.steps))            AS steps,\n    ROUND(AVG(dst.stress_high / 60.0))   AS stress_high_min,\n    ROUND(AVG(dst.recovery_high / 60.0)) AS recovery_high_min,\n    ROUND(AVG(sl.average_hrv))      AS average_hrv,\n    ROUND(AVG(sl.lowest_heart_rate)) AS lowest_heart_rate,\n    ROUND(AVG(sl.average_heart_rate)) AS sleep_avg_hr,\n    ROUND(AVG(sl.restless_periods)) AS restless_periods\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  CROSS JOIN event_span es\n  WHERE $2 = 'span'\n    AND ds.day BETWEEN es.span_end + INTERVAL '1 day' AND es.span_end + INTERVAL '7 days'\n    AND ds.day < CURRENT_DATE\n    AND ds.score IS NOT NULL\n),\n\n-- 7. Baseline — dni bez zdarzenia\nevent_days_set AS (\n  SELECT DISTINCT d FROM (\n    SELECT generate_series(start_day, COALESCE(end_day, start_day), interval '1 day')::date AS d\n    FROM oura_events\n    WHERE tag_type_code ILIKE '%' || $1 || '%'\n       OR custom_name   ILIKE '%' || $1 || '%'\n    UNION ALL\n    SELECT day AS d FROM oura_workouts\n    WHERE activity ILIKE '%' || $1 || '%'\n       OR label    ILIKE '%' || $1 || '%'\n  ) combined\n),\nbaseline AS (\n  SELECT\n    'baseline'                      AS result_type,\n    'baseline'                      AS label,\n    COUNT(*)                        AS n,\n    ROUND(AVG(ds.score))            AS sleep_score,\n    ROUND(AVG(ds.deep_sleep))       AS deep_sleep,\n    ROUND(AVG(ds.efficiency))       AS sleep_efficiency,\n    ROUND(AVG(ds.rem_sleep))        AS rem_sleep,\n    ROUND(AVG(ds.total_sleep))      AS total_sleep,\n    ROUND(AVG(dr.score))            AS readiness_score,\n    ROUND(AVG(dr.temperature_deviation)::numeric, 2) AS temperature_deviation,\n    ROUND(AVG(dr.hrv_balance))      AS hrv_balance,\n    ROUND(AVG(dr.resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(dr.recovery_index))   AS recovery_index,\n    ROUND(AVG(da.score))            AS activity_score,\n    ROUND(AVG(da.active_calories))  AS active_calories,\n    ROUND(AVG(da.steps))            AS steps,\n    ROUND(AVG(dst.stress_high / 60.0))   AS stress_high_min,\n    ROUND(AVG(dst.recovery_high / 60.0)) AS recovery_high_min,\n    ROUND(AVG(sl.average_hrv))      AS average_hrv,\n    ROUND(AVG(sl.lowest_heart_rate)) AS lowest_heart_rate,\n    ROUND(AVG(sl.average_heart_rate)) AS sleep_avg_hr,\n    ROUND(AVG(sl.restless_periods)) AS restless_periods\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate, average_heart_rate, restless_periods\n    FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  WHERE ds.day NOT IN (SELECT d FROM event_days_set)\n    AND ds.score IS NOT NULL\n),\n\n-- 8. Co-occurring tags (zagregowane, max 20)\nco_tags AS (\n  SELECT\n    'co_tag'                          AS result_type,\n    LOWER(COALESCE(e.custom_name, REPLACE(e.tag_type_code, 'tag_generic_', ''))) AS label,\n    COUNT(DISTINCT me.event_id)       AS n,\n    NULL::bigint AS sleep_score, NULL::bigint AS deep_sleep,\n    NULL::bigint AS sleep_efficiency, NULL::bigint AS rem_sleep,\n    NULL::bigint AS total_sleep, NULL::bigint AS readiness_score,\n    NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM matched_events me\n  JOIN oura_events e\n    ON e.start_day BETWEEN me.start_day - INTERVAL '2 days'\n                       AND me.end_day   + INTERVAL '2 days'\n  WHERE NOT (\n    e.tag_type_code ILIKE '%' || $1 || '%'\n    OR COALESCE(e.custom_name,'') ILIKE '%' || $1 || '%'\n  )\n  GROUP BY e.tag_type_code, e.custom_name\n  HAVING COUNT(DISTINCT me.event_id) >= 2\n  ORDER BY COUNT(DISTINCT me.event_id) DESC\n  LIMIT 20\n),\n\n-- 9. Cycle context (zagregowany per faza)\ncycle_ctx AS (\n  SELECT\n    'cycle_ctx'             AS result_type,\n    oc.phase                AS label,\n    COUNT(*)                AS n,\n    ROUND(COUNT(*) FILTER (WHERE oc.has_migraine) * 100.0 / NULLIF(COUNT(*),0)) AS sleep_score,\n    ROUND(AVG(oc.temp_deviation)::numeric, 3)::bigint AS deep_sleep,\n    ROUND(AVG(ds.score))    AS sleep_efficiency,\n    ROUND(AVG(dr.score))    AS rem_sleep,\n    ROUND(AVG(sl.average_hrv)) AS total_sleep,\n    NULL::bigint AS readiness_score, NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM oura_cycles oc\n  LEFT JOIN oura_daily_sleep     ds ON ds.day = oc.day\n  LEFT JOIN oura_daily_readiness dr ON dr.day = oc.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv FROM oura_sleep\n    WHERE day = oc.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  GROUP BY oc.phase\n),\n\n-- 10. Meta: liczba zdarzeń i lista\nevent_meta AS (\n  SELECT\n    'event_meta'            AS result_type,\n    event_label             AS label,\n    COUNT(DISTINCT event_id) AS n,\n    MIN(event_start_day::text::date - CURRENT_DATE)::bigint AS sleep_score,\n    NULL::bigint AS deep_sleep, NULL::bigint AS sleep_efficiency,\n    NULL::bigint AS rem_sleep, NULL::bigint AS total_sleep,\n    NULL::bigint AS readiness_score, NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM features\n  GROUP BY event_label\n),\n\n-- 11. Dzisiejsze metryki\ntoday_metrics AS (\n  SELECT\n    'today_metrics'                                                     AS result_type,\n    CURRENT_DATE::text\n      || '|cycle_day=' || COALESCE(c.cycle_day::text, '?')\n      || '|phase='     || COALESCE(c.phase, '?')\n      || '|is_period=' || COALESCE(c.is_period::text, '?')             AS label,\n    1                                                                   AS n,\n    r.score                                                             AS sleep_score,\n    c.cycle_day                                                         AS deep_sleep,\n    s.efficiency                                                        AS sleep_efficiency,\n    ROUND(s.total_sleep_duration / 60.0)                                AS rem_sleep,\n    s.restless_periods                                                  AS total_sleep,\n    r.score                                                             AS readiness_score,\n    r.temperature_deviation,\n    r.hrv_balance,\n    r.resting_heart_rate,\n    r.recovery_index,\n    a.score                                                             AS activity_score,\n    a.active_calories,\n    a.steps,\n    ROUND(dst.stress_high   / 60.0)                                     AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0)                                     AS recovery_high_min,\n    s.average_hrv,\n    s.lowest_heart_rate,\n    ROUND(s.average_heart_rate)                                         AS sleep_avg_hr,\n    s.restless_periods                                                  AS restless_periods\n  FROM oura_sleep s\n  LEFT JOIN oura_daily_readiness r  ON r.day = s.day\n  LEFT JOIN oura_daily_activity  a  ON a.day = s.day\n  LEFT JOIN oura_daily_stress   dst ON dst.day = s.day\n  LEFT JOIN oura_cycles          c  ON c.day = s.day\n  WHERE s.day = CURRENT_DATE AND s.type = 'long_sleep'\n),\n\n-- 12. Treningi w oknie ±3 dni od zdarzeń\nworkout_ctx AS (\n  SELECT\n    'workout_ctx'                                                       AS result_type,\n    COALESCE(w.label, w.activity)\n      || '|' || COALESCE(w.intensity, '?')\n      || '|offset='  || (w.day - me.start_day)::text                   AS label,\n    COUNT(DISTINCT me.event_id)                                         AS n,\n    ROUND(AVG(w.calories))::bigint                                      AS sleep_score,\n    ROUND(AVG(w.distance))::bigint                                      AS deep_sleep,\n    NULL::bigint AS sleep_efficiency, NULL::bigint AS rem_sleep,\n    NULL::bigint AS total_sleep, NULL::bigint AS readiness_score,\n    NULL::numeric AS temperature_deviation,\n    NULL::bigint AS hrv_balance, NULL::bigint AS resting_heart_rate,\n    NULL::bigint AS recovery_index, NULL::bigint AS activity_score,\n    NULL::bigint AS active_calories, NULL::bigint AS steps,\n    NULL::bigint AS stress_high_min, NULL::bigint AS recovery_high_min,\n    NULL::bigint AS average_hrv, NULL::bigint AS lowest_heart_rate,\n    NULL::bigint AS sleep_avg_hr, NULL::bigint AS restless_periods\n  FROM matched_events me\n  JOIN oura_workouts w\n    ON w.day BETWEEN me.start_day - INTERVAL '3 days'\n                 AND me.end_day   + INTERVAL '1 day'\n  GROUP BY COALESCE(w.label, w.activity), w.intensity, (w.day - me.start_day)\n)\n\nSELECT * FROM offset_averages\nUNION ALL SELECT * FROM span_pre\nUNION ALL SELECT * FROM span_during\nUNION ALL SELECT * FROM span_post\nUNION ALL SELECT * FROM baseline\nUNION ALL SELECT * FROM co_tags\nUNION ALL SELECT * FROM cycle_ctx\nUNION ALL SELECT * FROM event_meta\nUNION ALL SELECT * FROM today_metrics\nUNION ALL SELECT * FROM workout_ctx\nORDER BY result_type, label;",
         "options": {
-          "queryReplacement": "={{ $('Normalizer').first().json.event_hint }}"
+          "queryReplacement": "={{ [$('Normalizer').first().json.event_hint, $('Normalizer').first().json.event_mode] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        0
+        3136,
+        1360
       ],
-      "id": "52f3b769-4830-4165-95fb-236ce8b6c08f",
-      "name": "Event pattern query"
+      "id": "165edb1e-931c-48ae-bff3-2147397bc70b",
+      "name": "Event pattern query",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "-- INVERSE LOOKUP: tagi korelujące z anomaliami metryki\n-- $1 = metric_hint\nWITH metric_stats AS (\n  SELECT AVG(val) AS mean, STDDEV(val) AS stddev\n  FROM (\n    SELECT CASE $1\n      WHEN 'sleep_score'        THEN ds.score::float\n      WHEN 'readiness_score'    THEN dr.score::float\n      WHEN 'hrv'                THEN sl.average_hrv::float\n      WHEN 'hrv_balance'        THEN dr.hrv_balance::float\n      WHEN 'resting_heart_rate' THEN dr.resting_heart_rate::float\n      WHEN 'stress_high'        THEN dst.stress_high::float\n      WHEN 'recovery_high'      THEN dst.recovery_high::float\n      WHEN 'activity_score'     THEN da.score::float\n      WHEN 'deep_sleep'         THEN ds.deep_sleep::float\n      WHEN 'rem_sleep'          THEN ds.rem_sleep::float\n      ELSE ds.score::float\n    END AS val\n    FROM oura_daily_sleep ds\n    LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n    LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n    LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n    LEFT JOIN LATERAL (\n      SELECT average_hrv FROM oura_sleep\n      WHERE day = ds.day AND type = 'long_sleep'\n      ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n    ) sl ON true\n    WHERE ds.score IS NOT NULL\n  ) vals\n),\nanomaly_days AS (\n  SELECT ds.day\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  CROSS JOIN metric_stats\n  WHERE ds.score IS NOT NULL\n    AND CASE $1\n      WHEN 'sleep_score'        THEN ds.score::float\n      WHEN 'readiness_score'    THEN dr.score::float\n      WHEN 'hrv'                THEN sl.average_hrv::float\n      WHEN 'hrv_balance'        THEN dr.hrv_balance::float\n      WHEN 'resting_heart_rate' THEN dr.resting_heart_rate::float\n      WHEN 'stress_high'        THEN dst.stress_high::float\n      WHEN 'recovery_high'      THEN dst.recovery_high::float\n      WHEN 'activity_score'     THEN da.score::float\n      WHEN 'deep_sleep'         THEN ds.deep_sleep::float\n      WHEN 'rem_sleep'          THEN ds.rem_sleep::float\n      ELSE ds.score::float\n    END < metric_stats.mean - metric_stats.stddev\n)\nSELECT\n  LOWER(COALESCE(e.custom_name, REPLACE(e.tag_type_code, 'tag_generic_', ''))) AS tag_label,\n  e.tag_type_code, e.custom_name,\n  COUNT(DISTINCT ad.day) AS anomaly_days_with_tag,\n  ROUND(COUNT(DISTINCT ad.day) * 100.0 / NULLIF((SELECT COUNT(*) FROM anomaly_days),0), 1) AS pct_anomalies_with_tag,\n  MIN(e.start_day - ad.day) AS min_lead_days,\n  MAX(e.start_day - ad.day) AS max_lead_days,\n  ROUND(AVG(e.start_day - ad.day)) AS avg_lead_days\nFROM anomaly_days ad\nJOIN oura_events e\n  ON e.start_day BETWEEN ad.day - interval '2 days' AND ad.day + interval '2 days'\nGROUP BY e.tag_type_code, e.custom_name\nHAVING COUNT(DISTINCT ad.day) >= 2\nORDER BY anomaly_days_with_tag DESC\nLIMIT 20;",
+        "query": "-- INVERSE LOOKUP: tagi korelujące z anomaliami metryki\n-- $1 = metric_hint\nWITH metric_stats AS (\n  SELECT AVG(val) AS mean, STDDEV(val) AS stddev\n  FROM (\n    SELECT CASE $1\n      WHEN 'sleep_score'        THEN ds.score::float\n      WHEN 'readiness_score'    THEN dr.score::float\n      WHEN 'hrv'                THEN sl.average_hrv::float\n      WHEN 'hrv_balance'        THEN dr.hrv_balance::float\n      WHEN 'resting_heart_rate' THEN dr.resting_heart_rate::float\n      WHEN 'stress_high'        THEN dst.stress_high::float\n      WHEN 'recovery_high'      THEN dst.recovery_high::float\n      WHEN 'activity_score'     THEN da.score::float\n      WHEN 'deep_sleep'         THEN ds.deep_sleep::float\n      WHEN 'rem_sleep'          THEN ds.rem_sleep::float\n      ELSE ds.score::float\n    END AS val\n    FROM oura_daily_sleep ds\n    LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n    LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n    LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n    LEFT JOIN LATERAL (\n      SELECT average_hrv FROM oura_sleep\n      WHERE day = ds.day AND type = 'long_sleep'\n      ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n    ) sl ON true\n    WHERE ds.score IS NOT NULL\n  ) vals\n),\nanomaly_days AS (\n  SELECT ds.day\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  CROSS JOIN metric_stats\n  WHERE ds.score IS NOT NULL\n    AND CASE $1\n      WHEN 'sleep_score'        THEN ds.score::float\n      WHEN 'readiness_score'    THEN dr.score::float\n      WHEN 'hrv'                THEN sl.average_hrv::float\n      WHEN 'hrv_balance'        THEN dr.hrv_balance::float\n      WHEN 'resting_heart_rate' THEN dr.resting_heart_rate::float\n      WHEN 'stress_high'        THEN dst.stress_high::float\n      WHEN 'recovery_high'      THEN dst.recovery_high::float\n      WHEN 'activity_score'     THEN da.score::float\n      WHEN 'deep_sleep'         THEN ds.deep_sleep::float\n      WHEN 'rem_sleep'          THEN ds.rem_sleep::float\n      ELSE ds.score::float\n    END < metric_stats.mean - metric_stats.stddev\n)\nSELECT\n  LOWER(COALESCE(e.custom_name, REPLACE(e.tag_type_code, 'tag_generic_', ''))) AS tag_label,\n  e.tag_type_code, e.custom_name,\n  COUNT(DISTINCT ad.day) AS anomaly_days_with_tag,\n  ROUND(COUNT(DISTINCT ad.day) * 100.0 / NULLIF((SELECT COUNT(*) FROM anomaly_days),0), 1) AS pct_anomalies_with_tag,\n  MIN(e.start_day - ad.day) AS min_lead_days,\n  MAX(e.start_day - ad.day) AS max_lead_days,\n  ROUND(AVG(e.start_day - ad.day)) AS avg_lead_days\nFROM anomaly_days ad\nJOIN (\n  SELECT id, tag_type_code, custom_name, start_day\n  FROM oura_events\n  UNION ALL\n  SELECT id, 'workout' AS tag_type_code, COALESCE(label, activity) AS custom_name, day AS start_day\n  FROM oura_workouts\n) e\n  ON e.start_day BETWEEN ad.day - interval '2 days' AND ad.day + interval '2 days'\nGROUP BY e.tag_type_code, e.custom_name\nHAVING COUNT(DISTINCT ad.day) >= 2\nORDER BY anomaly_days_with_tag DESC\nLIMIT 20;",
         "options": {
           "queryReplacement": "={{ $('Normalizer').first().json.metric_hint ?? 'sleep_score' }}"
         }
@@ -273,16 +279,22 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        192
+        3136,
+        1552
       ],
-      "id": "94836ebf-ec07-4183-9864-fdf5b4629ccf",
-      "name": "Inverse lookup query"
+      "id": "eebf4ca4-37d6-4897-a7e5-3ec210d74251",
+      "name": "Inverse lookup query",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "-- TREND: rolling averages, $1 = time_range_days\nSELECT\n  ds.day,\n  ds.score AS sleep_score, ds.deep_sleep, ds.rem_sleep, ds.efficiency AS sleep_efficiency, ds.total_sleep,\n  dr.score AS readiness_score, dr.temperature_deviation, dr.hrv_balance, dr.resting_heart_rate, dr.body_temperature,\n  da.score AS activity_score, da.steps, da.active_calories, da.high_activity_time,\n  ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n  ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n  sl.average_hrv, sl.lowest_heart_rate, sl.restless_periods,\n  c.cycle_day, c.phase AS cycle_phase,\n  w.workout_count, w.workout_calories, w.workout_types,\n  ROUND(AVG(ds.score)              OVER w7) AS sleep_score_7d_avg,\n  ROUND(AVG(dr.score)              OVER w7) AS readiness_7d_avg,\n  ROUND(AVG(sl.average_hrv)        OVER w7) AS hrv_7d_avg,\n  ROUND(AVG(sl.lowest_heart_rate)  OVER w7) AS rhr_7d_avg,\n  ROUND(AVG(dst.stress_high)       OVER w7) AS stress_7d_avg\nFROM oura_daily_sleep ds\nLEFT JOIN oura_daily_readiness dr  ON dr.day  = ds.day\nLEFT JOIN oura_daily_activity  da  ON da.day  = ds.day\nLEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\nLEFT JOIN oura_cycles          c   ON c.day   = ds.day\nLEFT JOIN LATERAL (\n  SELECT average_hrv, lowest_heart_rate, restless_periods\n  FROM oura_sleep\n  WHERE day = ds.day AND type = 'long_sleep'\n  ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n) sl ON true\nLEFT JOIN LATERAL (\n  SELECT\n    COUNT(*)::integer                                                         AS workout_count,\n    SUM(calories)::integer                                                    AS workout_calories,\n    STRING_AGG(activity || '(' || COALESCE(intensity,'?') || ')', ', ')      AS workout_types\n  FROM oura_workouts\n  WHERE day = ds.day\n) w ON true\nWHERE ds.day >= CURRENT_DATE - ($1 || ' days')::interval\n  AND ds.score IS NOT NULL\nWINDOW w7 AS (ORDER BY ds.day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)\nORDER BY ds.day ASC;",
+        "query": "-- TREND: rolling averages, $1 = time_range_days\nSELECT\n  ds.day,\n  ds.score AS sleep_score, ds.deep_sleep, ds.rem_sleep, ds.efficiency AS sleep_efficiency, ds.total_sleep,\n  dr.score AS readiness_score, dr.temperature_deviation, dr.hrv_balance, dr.resting_heart_rate, dr.body_temperature,\n  da.score AS activity_score, da.steps, da.active_calories, da.high_activity_time,\n  ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n  ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n  sl.average_hrv, sl.lowest_heart_rate, sl.restless_periods,\n  c.cycle_day, c.phase AS cycle_phase,\n  w.workout_count, w.workout_calories, w.workout_types,\n  ROUND(AVG(ds.score)              OVER w7) AS sleep_score_7d_avg,\n  ROUND(AVG(dr.score)              OVER w7) AS readiness_7d_avg,\n  ROUND(AVG(sl.average_hrv)        OVER w7) AS hrv_7d_avg,\n  ROUND(AVG(sl.lowest_heart_rate)  OVER w7) AS rhr_7d_avg,\n  ROUND(AVG(dst.stress_high)       OVER w7) AS stress_7d_avg\nFROM oura_daily_sleep ds\nLEFT JOIN oura_daily_readiness dr  ON dr.day  = ds.day\nLEFT JOIN oura_daily_activity  da  ON da.day  = ds.day\nLEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\nLEFT JOIN oura_cycles          c   ON c.day   = ds.day\nLEFT JOIN LATERAL (\n  SELECT average_hrv, lowest_heart_rate, restless_periods\n  FROM oura_sleep\n  WHERE day = ds.day AND type = 'long_sleep'\n  ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n) sl ON true\nLEFT JOIN LATERAL (\n  SELECT\n    COUNT(*)::integer                                                         AS workout_count,\n    SUM(calories)::integer                                                    AS workout_calories,\n    STRING_AGG(COALESCE(label, activity) || '(' || COALESCE(intensity,'?') || ')', ', ')      AS workout_types\n  FROM oura_workouts\n  WHERE day = ds.day\n) w ON true\nWHERE ds.day >= CURRENT_DATE - ($1 || ' days')::interval\n  AND ds.score IS NOT NULL\nWINDOW w7 AS (ORDER BY ds.day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)\nORDER BY ds.day ASC;",
         "options": {
           "queryReplacement": "={{ $('Normalizer').first().json.time_range_days }}"
         }
@@ -290,16 +302,22 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        384
+        3136,
+        1744
       ],
-      "id": "62874465-8573-47b8-b1ea-fe9230c49c6b",
-      "name": "Trend query"
+      "id": "b05a0bfb-06ce-4ff0-b5fc-8e19029123c5",
+      "name": "Trend query",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "-- SUMMARY: overview + top tags + cycle + workouts, $1 = time_range_days\nWITH recent AS (\n  SELECT ds.day,\n    ds.score AS sleep_score, ds.deep_sleep, ds.rem_sleep, ds.total_sleep, ds.efficiency AS sleep_efficiency,\n    dr.score AS readiness_score, dr.temperature_deviation, dr.resting_heart_rate, dr.hrv_balance,\n    da.score AS activity_score, da.steps, da.active_calories,\n    ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n    sl.average_hrv, sl.lowest_heart_rate,\n    c.cycle_day, c.phase AS cycle_phase,\n    w.workout_count, w.workout_calories, w.workout_types\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day  = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day  = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN oura_cycles          c   ON c.day   = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  LEFT JOIN LATERAL (\n    SELECT\n      COUNT(*)::integer AS workout_count,\n      SUM(calories)::integer AS workout_calories,\n      STRING_AGG(activity || '(' || COALESCE(intensity,'?') || ')', ', ') AS workout_types\n    FROM oura_workouts WHERE day = ds.day\n  ) w ON true\n  WHERE ds.day >= CURRENT_DATE - ($1 || ' days')::interval\n    AND ds.score IS NOT NULL\n),\naverages AS (\n  SELECT 'averages' AS record_type, NULL::date AS day,\n    ROUND(AVG(sleep_score)) AS sleep_score, ROUND(AVG(deep_sleep)) AS deep_sleep,\n    ROUND(AVG(rem_sleep)) AS rem_sleep, ROUND(AVG(total_sleep)) AS total_sleep,\n    ROUND(AVG(sleep_efficiency)) AS sleep_efficiency,\n    ROUND(AVG(readiness_score)) AS readiness_score,\n    ROUND(AVG(temperature_deviation)::numeric,2) AS temperature_deviation,\n    ROUND(AVG(resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(hrv_balance)) AS hrv_balance,\n    ROUND(AVG(activity_score)) AS activity_score,\n    ROUND(AVG(steps)) AS steps, ROUND(AVG(active_calories)) AS active_calories,\n    ROUND(AVG(stress_high_min)) AS stress_high_min,\n    ROUND(AVG(recovery_high_min)) AS recovery_high_min,\n    ROUND(AVG(average_hrv)) AS average_hrv,\n    ROUND(AVG(lowest_heart_rate)) AS lowest_heart_rate,\n    NULL::integer AS cycle_day, NULL::text AS cycle_phase,\n    NULL::integer AS workout_count, NULL::integer AS workout_calories,\n    NULL::text AS workout_types,\n    COUNT(*) AS n_days\n  FROM recent\n),\ndaily_rows AS (\n  SELECT 'daily' AS record_type, day,\n    sleep_score, deep_sleep, rem_sleep, total_sleep, sleep_efficiency,\n    readiness_score, temperature_deviation, resting_heart_rate, hrv_balance,\n    activity_score, steps, active_calories, stress_high_min, recovery_high_min,\n    average_hrv, lowest_heart_rate,\n    cycle_day, cycle_phase,\n    workout_count, workout_calories, workout_types,\n    NULL::bigint AS n_days\n  FROM recent\n),\ntop_tags AS (\n  SELECT 'tag' AS record_type, NULL::date AS day,\n    NULL::integer AS sleep_score, NULL::integer AS deep_sleep,\n    NULL::integer AS rem_sleep, NULL::integer AS total_sleep,\n    NULL::integer AS sleep_efficiency, NULL::integer AS readiness_score,\n    NULL::numeric AS temperature_deviation, NULL::integer AS resting_heart_rate,\n    NULL::integer AS hrv_balance, NULL::integer AS activity_score,\n    NULL::integer AS steps, NULL::integer AS active_calories,\n    NULL::integer AS stress_high_min, NULL::integer AS recovery_high_min,\n    NULL::integer AS average_hrv, NULL::integer AS lowest_heart_rate,\n    NULL::integer AS cycle_day, NULL::text AS cycle_phase,\n    NULL::integer AS workout_count, NULL::integer AS workout_calories,\n    NULL::text AS workout_types,\n    COUNT(*)::bigint AS n_days\n  FROM oura_events\n  WHERE start_day >= CURRENT_DATE - ($1 || ' days')::interval\n  GROUP BY tag_type_code, custom_name\n  ORDER BY COUNT(*) DESC\n  LIMIT 10\n)\nSELECT * FROM averages\nUNION ALL SELECT * FROM daily_rows\nUNION ALL SELECT * FROM top_tags\nORDER BY day NULLS FIRST;",
+        "query": "-- SUMMARY: overview + top tags + cycle + workouts, $1 = time_range_days\nWITH recent AS (\n  SELECT ds.day,\n    ds.score AS sleep_score, ds.deep_sleep, ds.rem_sleep, ds.total_sleep, ds.efficiency AS sleep_efficiency,\n    dr.score AS readiness_score, dr.temperature_deviation, dr.resting_heart_rate, dr.hrv_balance,\n    da.score AS activity_score, da.steps, da.active_calories,\n    ROUND(dst.stress_high   / 60.0) AS stress_high_min,\n    ROUND(dst.recovery_high / 60.0) AS recovery_high_min,\n    sl.average_hrv, sl.lowest_heart_rate,\n    c.cycle_day, c.phase AS cycle_phase,\n    w.workout_count, w.workout_calories, w.workout_types\n  FROM oura_daily_sleep ds\n  LEFT JOIN oura_daily_readiness dr  ON dr.day  = ds.day\n  LEFT JOIN oura_daily_activity  da  ON da.day  = ds.day\n  LEFT JOIN oura_daily_stress    dst ON dst.day = ds.day\n  LEFT JOIN oura_cycles          c   ON c.day   = ds.day\n  LEFT JOIN LATERAL (\n    SELECT average_hrv, lowest_heart_rate FROM oura_sleep\n    WHERE day = ds.day AND type = 'long_sleep'\n    ORDER BY total_sleep_duration DESC NULLS LAST LIMIT 1\n  ) sl ON true\n  LEFT JOIN LATERAL (\n    SELECT\n      COUNT(*)::integer AS workout_count,\n      SUM(calories)::integer AS workout_calories,\n      STRING_AGG(COALESCE(label, activity) || '(' || COALESCE(intensity,'?') || ')', ', ') AS workout_types\n    FROM oura_workouts WHERE day = ds.day\n  ) w ON true\n  WHERE ds.day >= CURRENT_DATE - ($1 || ' days')::interval\n    AND ds.score IS NOT NULL\n),\naverages AS (\n  SELECT 'averages' AS record_type, NULL::date AS day,\n    ROUND(AVG(sleep_score)) AS sleep_score, ROUND(AVG(deep_sleep)) AS deep_sleep,\n    ROUND(AVG(rem_sleep)) AS rem_sleep, ROUND(AVG(total_sleep)) AS total_sleep,\n    ROUND(AVG(sleep_efficiency)) AS sleep_efficiency,\n    ROUND(AVG(readiness_score)) AS readiness_score,\n    ROUND(AVG(temperature_deviation)::numeric,2) AS temperature_deviation,\n    ROUND(AVG(resting_heart_rate)) AS resting_heart_rate,\n    ROUND(AVG(hrv_balance)) AS hrv_balance,\n    ROUND(AVG(activity_score)) AS activity_score,\n    ROUND(AVG(steps)) AS steps, ROUND(AVG(active_calories)) AS active_calories,\n    ROUND(AVG(stress_high_min)) AS stress_high_min,\n    ROUND(AVG(recovery_high_min)) AS recovery_high_min,\n    ROUND(AVG(average_hrv)) AS average_hrv,\n    ROUND(AVG(lowest_heart_rate)) AS lowest_heart_rate,\n    NULL::integer AS cycle_day, NULL::text AS cycle_phase,\n    NULL::integer AS workout_count, NULL::integer AS workout_calories,\n    NULL::text AS workout_types,\n    COUNT(*) AS n_days\n  FROM recent\n),\ndaily_rows AS (\n  SELECT 'daily' AS record_type, day,\n    sleep_score, deep_sleep, rem_sleep, total_sleep, sleep_efficiency,\n    readiness_score, temperature_deviation, resting_heart_rate, hrv_balance,\n    activity_score, steps, active_calories, stress_high_min, recovery_high_min,\n    average_hrv, lowest_heart_rate,\n    cycle_day, cycle_phase,\n    workout_count, workout_calories, workout_types,\n    NULL::bigint AS n_days\n  FROM recent\n),\ntop_tags AS (\n  SELECT 'tag' AS record_type, NULL::date AS day,\n    NULL::integer AS sleep_score, NULL::integer AS deep_sleep,\n    NULL::integer AS rem_sleep, NULL::integer AS total_sleep,\n    NULL::integer AS sleep_efficiency, NULL::integer AS readiness_score,\n    NULL::numeric AS temperature_deviation, NULL::integer AS resting_heart_rate,\n    NULL::integer AS hrv_balance, NULL::integer AS activity_score,\n    NULL::integer AS steps, NULL::integer AS active_calories,\n    NULL::integer AS stress_high_min, NULL::integer AS recovery_high_min,\n    NULL::integer AS average_hrv, NULL::integer AS lowest_heart_rate,\n    NULL::integer AS cycle_day, NULL::text AS cycle_phase,\n    NULL::integer AS workout_count, NULL::integer AS workout_calories,\n    NULL::text AS workout_types,\n    COUNT(*)::bigint AS n_days\n  FROM oura_events\n  WHERE start_day >= CURRENT_DATE - ($1 || ' days')::interval\n  GROUP BY tag_type_code, custom_name\n  ORDER BY COUNT(*) DESC\n  LIMIT 10\n)\nSELECT * FROM averages\nUNION ALL SELECT * FROM daily_rows\nUNION ALL SELECT * FROM top_tags\nORDER BY day NULLS FIRST;",
         "options": {
           "queryReplacement": "={{ $('Normalizer').first().json.time_range_days }}"
         }
@@ -307,11 +325,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        576
+        3136,
+        1936
       ],
-      "id": "b47a2730-a6d7-4ed4-b5ce-19613122bba3",
-      "name": "Summary query"
+      "id": "a4eea7fd-6e84-4bfc-96dc-c7d03c8f0659",
+      "name": "Summary query",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
@@ -322,11 +346,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        768
+        3136,
+        2128
       ],
-      "id": "e11d7d75-e868-46c5-8271-76cab481196f",
-      "name": "Cycle analysis query"
+      "id": "fc1a0562-b64e-4f87-b0ff-8819787a10d1",
+      "name": "Cycle analysis query",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "YOUR_POSTGRES_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
@@ -335,10 +365,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        480
+        3360,
+        1840
       ],
-      "id": "f4cbfb35-60f3-4d24-b98a-4ca12dea3fc8",
+      "id": "e073bf5d-7c7a-46ee-a4de-fa624dca04f2",
       "name": "Context builder"
     },
     {
@@ -346,16 +376,16 @@
         "promptType": "define",
         "text": "={{ JSON.stringify($json) }}",
         "options": {
-          "systemMessage": "You are a personal health analyst specialising in Oura Ring biometric data. You receive pre-aggregated structured JSON — never raw rows.\n\nCRITICAL — column semantics (always use the correct ones):\n- average_hrv / hrv_ms = ACTUAL HRV in milliseconds (from sleep sensor). Use this for HRV analysis.\n- lowest_heart_rate / rhr_bpm = ACTUAL resting heart rate in bpm (from sleep sensor). Use this for RHR analysis.\n- hrv_balance / hrv_balance_score = score 1–100 (Oura readiness contributor). Do NOT report as ms.\n- resting_heart_rate (in offset_avg / baseline rows) = score 1–100 (Oura contributor). Do NOT report as bpm.\n- stress_high_min / recovery_high_min = already converted to MINUTES.\n- context.data.today = today's actual metrics. ALWAYS start your analysis by reporting these values.\n- workout_ctx rows: label format = activity|intensity|offset=N (N days relative to event). sleep_score=avg_calories, deep_sleep=avg_distance_m.\n- cycle_day and cycle_phase are always in context.data.today when available. Always report them.\n\nYour tasks:\n1. Start with today's actual metrics (context.data.today) — cycle day, phase, HRV in ms, RHR in bpm, stress minutes.\n2. Analyse the data thoughtfully and identify meaningful patterns, anomalies, correlations.\n3. For event_pattern: compare offset averages (-1, 0, +1) against baseline; highlight metrics differing by >5%; note any workout patterns around events.\n4. For trend: describe direction and inflection points; note workout days.\n5. For summary: give a health snapshot with highlights; include cycle phase context.\n6. For cycle_analysis: interpret biomarker patterns across cycle phases using actual HRV ms and RHR bpm.\n7. End with 2–3 concrete, personalised recommendations.\n\nTone: warm, evidence-based, like a knowledgeable health coach. Language: respond in the same language as the question (Polish if asked in Polish).\nFormat: markdown with clear sections. Max 600 words.\nFor followup analysis_type: answer purely based on prior conversation — do not invent new data."
+          "systemMessage": "You are a personal health analyst specialising in Oura Ring biometric data. You receive pre-aggregated structured JSON — never raw rows.\n\nCRITICAL — column semantics (always use the correct ones):\n- average_hrv / hrv_ms = ACTUAL HRV in milliseconds (from sleep sensor). Use this for HRV analysis.\n- lowest_heart_rate / rhr_bpm = ACTUAL resting heart rate in bpm (from sleep sensor). Use this for RHR analysis.\n- hrv_balance / hrv_balance_score = score 1–100 (Oura readiness contributor). Do NOT report as ms.\n- resting_heart_rate (in offset_avg / baseline rows) = score 1–100 (Oura contributor). Do NOT report as bpm.\n- stress_high_min / recovery_high_min = already converted to MINUTES.\n- context.data.today = today's actual metrics. ALWAYS start your analysis by reporting these values.\n- workout_ctx rows: label format = workout_name|intensity|offset=N (N days relative to event). sleep_score=avg_calories, deep_sleep=avg_distance_m.\n- cycle_day and cycle_phase are always in context.data.today when available. Always report them.\n\nresult_type semantics:\n- offset_avg (label = -1 / 0 / 1): point-mode averages across all occurrences of a discrete event. Compare against baseline.\n- pre_period: aggregate of 7 days BEFORE the first day of a continuous tag/medication course. Represents the pre-treatment baseline.\n- during (label = YYYY-MM-DD): individual day within a continuous course. Each row is one specific date — do NOT average or merge them, show day-by-day progression.\n- post_period: aggregate of 7 days AFTER the last tagged day (only present if those days have already passed).\n- baseline: overall historical average excluding all event days.\n- co_tag: other tags co-occurring near the event.\n- cycle_ctx: per-phase averages (sleep_score=migraine%, deep_sleep=avg_temp_deviation, sleep_efficiency=avg_sleep_score, rem_sleep=avg_readiness_score, total_sleep=avg_hrv_ms).\n- event_meta: event count and recency info.\n- today_metrics: today's values (label encodes date|cycle_day|phase|is_period).\n- workout_ctx: workouts near the event.\n\nYour tasks:\n1. Analyse the data thoughtfully and identify meaningful patterns, anomalies, correlations.\n2. For point-mode event_pattern (offset_avg rows present): compare offsets -1/0/+1 against baseline; highlight metrics differing by >5%; note workout patterns.\n3. For span-mode event_pattern (pre_period / during / post_period rows present):\n   - Start with pre_period vs baseline to establish whether pre-treatment state was typical.\n   - Show day-by-day progression through the \"during\" days — describe the trajectory, not just individual values.\n   - If post_period is present, compare it to pre_period to assess recovery or lasting effect.\n   - If post_period is absent, explicitly note that the course is ongoing and recovery data is not yet available.\n4. For trend: describe direction and inflection points; note workout days.\n5. For summary: give a health snapshot with highlights; include cycle phase context.\n6. For cycle_analysis: interpret biomarker patterns across cycle phases using actual HRV ms and RHR bpm and co-occurring tags.\n7. End with 2–3 concrete, personalised recommendations.\n\nTone: warm, evidence-based, like a knowledgeable health coach. Language: respond in the same language as the question (Polish if asked in Polish).\nFormat: markdown with clear sections. Max 600 words.\nFor followup analysis_type: answer purely based on prior conversation — do not invent new data."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        448,
-        480
+        3584,
+        1840
       ],
-      "id": "8d47cff5-7e78-480c-a8db-3458861619b2",
+      "id": "bfe69f3c-3668-4841-8e33-1f1fc21027c7",
       "name": "AI Analyst",
       "retryOnFail": true
     },
@@ -366,10 +396,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1024,
-        704
+        2112,
+        1840
       ],
-      "id": "3764b8d9-50e5-4645-bdca-14538ebad2dd",
+      "id": "4393e95b-f981-4f71-b804-a0cee7c847b8",
       "name": "Load History"
     },
     {
@@ -379,10 +409,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        800,
-        480
+        3936,
+        1840
       ],
-      "id": "2e35a375-2471-49fa-af45-2afe532c0046",
+      "id": "b43ed0ba-68cc-4eb3-941d-44f9f6bb44a7",
       "name": "Save History"
     },
     {
@@ -392,10 +422,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        960
+        3136,
+        2320
       ],
-      "id": "1c8ca162-3c8d-4482-8464-44e7f251c473",
+      "id": "8212a692-071f-4387-8f92-41ac8a984533",
       "name": "Followup context"
     },
     {
@@ -407,10 +437,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        1024,
-        800
+        4160,
+        1840
       ],
-      "id": "537d528d-f014-4525-99e4-287999a4d15f",
+      "id": "e9eb0df7-d961-4551-a73d-a8c98887b1c7",
       "name": "Respond to Webhook"
     },
     {
@@ -420,10 +450,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -992,
-        176
+        1888,
+        1136
       ],
-      "id": "3d4aef5b-f3a6-403c-9ac0-a2d81401050d",
+      "id": "240a2b12-4cd0-446d-9b7a-7fdab235b6c7",
       "name": "Clear history"
     },
     {
@@ -436,10 +466,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1200,
-        176
+        1664,
+        1136
       ],
-      "id": "9fde9dc5-f14e-45b3-8d67-0b4d175e2718",
+      "id": "7ccdcd10-a07d-4d98-9328-8eed386b752d",
       "name": "Webhook1",
       "webhookId": "YOUR_WEBHOOK_ID"
     },
@@ -452,10 +482,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        -720,
-        192
+        2112,
+        1136
       ],
-      "id": "9c338e25-1eec-47ec-af25-84aefab8e6b8",
+      "id": "ff78b0d3-e056-4ad5-aa72-eafcd9110562",
       "name": "Respond to Webhook1"
     },
     {
@@ -465,11 +495,17 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        400,
-        688
+        2192,
+        2048
       ],
-      "id": "1098dfb4-b459-4094-b1c9-beccb27b142c",
-      "name": "Google Gemini Chat Model1"
+      "id": "c9b326c9-efd1-4ecc-a5ff-86c7179421f6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "YOUR_GEMINI_CREDENTIAL_NAME"
+        }
+      }
     },
     {
       "parameters": {
@@ -478,11 +514,17 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -832,
-        720
+        3584,
+        2016
       ],
-      "id": "f4cea1a3-9f21-4732-b1f3-b951a4dc6c5e",
-      "name": "Google Gemini Chat Model"
+      "id": "2491b1f9-b95a-4500-8fe5-c29837aa32dd",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "YOUR_GEMINI_CREDENTIAL_NAME"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -720,17 +762,6 @@
         ]
       ]
     },
-    "Google Gemini Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Analyst",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
@@ -741,17 +772,28 @@
           }
         ]
       ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "bc8697a2-2a86-47f3-909d-de9ace09c312",
+  "versionId": "YOUR_VERSION_ID",
   "meta": {
-    "instanceId": "525bdd9a54350779c5ba0ca2a2f26a8c70f5b305c530c0a6e00d95e2e7d337ce"
+    "templateCredsSetupCompleted": true
   },
-  "id": "klOaCrwL0MPQZKnl",
+  "id": "YOUR_WORKFLOW_ID",
   "tags": []
 }
