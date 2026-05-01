@@ -234,6 +234,12 @@ python oura_etl.py --daemon
 Logs are written to `logs/oura_etl.log`.
 
 ---
+## Preview
+
+![Chat preview](example_chat.png)
+
+![Workflow logic preview](workflow_screenshot.png)
+
 
 ## Project Status & Roadmap
 
