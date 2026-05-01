@@ -138,7 +138,12 @@ oura-health-analytics/
 ```
 
 ---
+## Preview
 
+![Chat preview](example_chat.jpg)
+
+![Workflow logic preview](workflow_screenshot.jpg)
+---
 ## Setup
 
 ### Prerequisites
@@ -234,12 +239,6 @@ python oura_etl.py --daemon
 Logs are written to `logs/oura_etl.log`.
 
 ---
-## Preview
-
-![Chat preview](example_chat.jpg)
-
-![Workflow logic preview](workflow_screenshot.jpg)
-
 
 ## Project Status & Roadmap
 
